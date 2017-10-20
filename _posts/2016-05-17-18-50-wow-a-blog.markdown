@@ -1,0 +1,11 @@
+---
+layout: post
+title:  "Wow a blog"
+date:   2016-05-17 18:50:00 -0600
+---
+I've decided to try blogging for once and no not a tumblr~isk blog as in my eyes those are not even real blogs more of collections of interesting pictures that the user finds. Anyway getting back on track i've chosen to try and run ghost on this blog for two big reasons:
+
+* Open source
+* Self-Hosted
+
+The first one being the biggest one as in my eyes if it's closed source they're selling you. The second one is not so mush an issue it's more of a preference where i like to control everything i use as much as possible i can see why many would much rather just have someone else do it and not ever think about it again. But in any case Welcome and thanks if you've read this far :)
