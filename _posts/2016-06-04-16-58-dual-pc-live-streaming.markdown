@@ -1,0 +1,12 @@
+---
+layout: post
+title:  "Dual PC Live Streaming"
+date:   2016-06-04 16:58:00 -0600
+---
+**Dual PC Streaming** Who is it for?. Dual PC streaming is for professional streamers who want the best quilty for their stream that current encoding tech allows for but at the same time allow them to get maintain a high frame rate on their main gaming PC.
+
+Ok. Now How does it work? Well their are several ways to setup dual PC streaming the first being the one i recommend is using a capture card on your gaming PC and sending the output to the stream PC along with an audio cable coming from your gaming PC into the streaming PC. Why do i recommend you doing it this way? easy dual pc streaming i with this method adds zero extra load to your gaming PC as it's duties stay the exact same. It can't be all good right? Well dual PC streaming using this method isn't all good for the obvious reason that it is very expensive to get into and would require you to have a fully functional PC with a screen and some way for you to easily control it while streaming but beyond that there really is none.
+
+Now the second option i'm going to talk about in this post. This one is a lot more complicated to setup and only really is useful of you simply want to compress the stream some more before sending it. For this setup you need of course two PCs but now the streaming PC doesn't need a GPU or a screen even as all it does is host a NGINX-RTMP server and run FFMPEG both of which are controlled from the command line. The full setup of this method looks like such you have your Gaming PC with OBS running on it streaming at an absurdly high bitrate like 100,000 Kbps for example with near zero encoding but instead of streaming to twitch you stream to the local second PC that then ingests the feed uses its processing power to compress the video feed to something reasonable like 2,500 Kbps and send it to twitch. Would i recommend this? Well if you happen to have a second PC lying around ya go for it as the only real negative effect on your stream will be the slight bit of extra delay (1-2 Sec~). Would i recommend someone go out and buy a new PC for this? No unless you have money to burn and really want to get all you can out of both of those PCs or have a really slow upload. Plus if you have money to burn you might as well go all out and setup the much much better first example!
+
+If you have any questions, comments or anything feel free to [email me](mailto:admin@boops.me)

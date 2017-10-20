@@ -1,0 +1,19 @@
+---
+layout: post
+title:  "IPv6"
+date:   2016-07-11 08:55:00 -0600
+---
+
+Yes, this will be a listed rant article as people who know how computers work in a basic sense know IPv4 but still have no clue as to how IPv6 works and the people who should have taught them IE teachers usually just skip over it with the common excuses that i'm going to list off below.
+
+1. "Its usage is not wide spread enough". Let me start my response to this with AHHHHHH...Ok i don't think many of the people who say this think it though to its logical end as why would a company put in the effort into going dual stack or IPv6 only of only 10%~ of their customers are using it? This one hurts more then anything from the reason above as this also means that a large chunk of admins in the world. And that's how you end up with Amazons Route 53 setup IPv4 only DNS.
+
+2. "It's not as safe!" This comes from the fact that a long time ago when you would allow IPv6 auto-configuration it would allow anyone who knew your IPv6 address to get your devices MAC address. Not to downplay this as it is a real issue it has since been solved via IPv6 privacy extensions that as far as I've seen basically every IPv6 enabled device has at this point.
+
+3. "It's Hard!" I am not quote sure what one hurts more this or point one. Most of the people i know as soon as they are having network issues disable IPv6 which in most cases is quite funny as most people also do not have IPv6 in their house meaning they are disabling something that is already not there. But back on track now, I will concede that when you first look at an IPv6 address it can be long and scary IE the IPv4 & 6 for this page are 167.114.153.91 & 2607:5300:100:200::704. So yes it may look hard if you are just starting with it but remember what else was hard? learning IPv4 but now that you know IPv4 IPv6 will be quite easy to learn and once you start using it you may like i have even start liking it more!
+
+4. "Not as much control over devices" This one nicely ties into the theme of a lot of admins are very lazy just like point three was alluding towards. As this boils down to you haven't used IPv6 enough or at least explored it enough yet as in my own experience i have been able to do everything i would usually do with DHCP with IPv6 RAs
+
+Now my finial words on this are tl;dr don't be a lazy admin just because IPv4 works doesn't mean you should not at minimum get your back end systems running dual stack or if you're feeling adventurous your whole network running IPv6 as doing that would help kill point one of the list. and finally if you're a teacher or anyone teaching people IP works please please please also teach IPv6 after IPv4 as if more people know how it works it will up the adoption rate massively for company's!
+
+Have a question, concern or just want to tell me somthing? [email me!](mailto:blog@boops.me)

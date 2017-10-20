@@ -1,0 +1,17 @@
+---
+layout: post
+title:  "SSH Tunnels"
+date:   2016-07-15 09:26:00 -0600
+---
+
+You may have heard about SSH tunneling. About what it can do how it works etc etc. But today I'm going to show you the three main tunnel/super useful tunnels that you can quickly setup over SSH.
+
+1. Dynamic setup using the -D <port number> flag while opening the SSH connection it sets the SSH connection to also act as a socks server allowing applications that support socks (Firefox for instance) to connect and communicate through the remote server. This can be quickly used to tunnel your connection to your home for instance allowing you to securely browse your local network while anywhere securely. This can also be used to quickly jump over firewalls on public Wi-Fi being said though they would have to allow SSH in the first place. Full example of how to create and use a dynamic tunnel is `ssh <user>@<address> -D <port number>` That will open the connection then once you login you tell the application the supports socks to connect to `127.0.0.1:<port number you used>` and their you go an encrypted tunnel to your server that you can use to browse the web!
+
+2. Local port forwarding. This can take a minute to wrap your head around as it's like normal port forwarding just in reverse as it forwards the defined port from your end to the server you are connecting to so for example when you local forward port 7777 when a process on your system tries to connect to *:7777 it will connect though the SSH tunnel to the remote host. Kinda confusing right? But this does have it uses and the best example that comes to mind is syncthing. Syncthing has a webgui that allows it to administer it and of course for security reasons you would not want that facing the internet as someone will find it and attempt to brute force it so that way i secured mine while still using a password i can remember is by making it only serve the webgui over localhost then use a local port forward on my client to connect to it over a secure session. Now to use local port forwarding you use the -L flag as such `ssh <user>@<address> -L <local ip to listen on>:<local port>:<remote ip to forward to>:<remote port to forward to>` Remebemer that the if you do not define the first IP it will default to 127.0.0.1 or ::1.
+
+3. Remote port forwarding. This type of tunnel is super handy for tons of applications such as temporary port forwarding if your network has a device that you can SSH into or even permanent open ports if you use a program like autossh to keep the connection open so you could have a webserver in your home without using your personal IP or if you have a DHCP address this would also allow you to connect to your homes internal network via a static IP on a VPS! To setup remote port forwarding is only slightly harder to do then the previous two as inside of your sshd_config file you have to set `GatewayPorts yes` and if you don't do this the connection won't work. Now the command to use remote port forwarding as i'm guessing you guessed by now is -R used in the same format as local port forwading so `ssh <user>@<address> -R <local ip to listen on>:<local port>:<remote ip to forward to>:<remote port to forward to>`
+
+Finally to end this all off i'd just like to remind you to use the -v flag to, It stands for verbose and can really really help you in trying to figure out way you are unable to use your SSH tunnel!
+
+Have a question, concern or just want to tell me somthing? [email me!](mailto:blog@boops.me)
