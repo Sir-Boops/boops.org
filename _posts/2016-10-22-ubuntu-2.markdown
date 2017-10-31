@@ -1,0 +1,16 @@
+---
+layout: post
+title:  "Ubuntu"
+date:   2016-10-22 18:09:00 -0600
+---
+Ah Ubuntu, the distro every Linux junkie loves to hate or loves to ironically hate. The ladder I'm also guilty of. But Beyond the "L0l Amazon/Nobuntu" jokes Ubuntu is a very solid system with cool features such as a steady release schedule , Mostly up to date packages, Tons of support, Unity ( Please don't hurt me! ) And the biggest one of all it's name.
+
+But before i go into all of that how did i fare with Ubuntu 16.10? Well starting with the install i booted using UEFI like i enjoy doing as UEFI is the new cool thing for Linux distros but to my dismay i could not get Ubuntu to boot using UEFI with auto partitioning or manual partitioning. The issue to this I'm still not sure but after 3 attempts at a UEFI install i gave in and installed using legacy mode.
+
+The initial boot of Ubuntu was just as i remember  kinda slow but and with the popup for hot keys blasted in your face. Besides that though everything else went smoothly and before i knew it i had Nightly running and was watching flash videos while downloading more packages!
+
+Now, How much did i enjoy my time with Ubuntu in this week? Well, it's another Distro. Yes, it's has fancy tools baked in that can help beginners to Linux along with a super active forum. In fact my first Linux install was Ubuntu! But for the user that likes the tinker and make very things very specific Ubuntu can almost get their but it just misses the mark, Although i will coincide here as I'm comparing it's customization options to that of Gentoo and by that comparison the only distros that would fit are source based distros. But Ubuntu is still missing some basic things that i thought would have been added by now like the Atom editor. Why that is missing i have no idea but it's been missing for so long I'm starting to think that the Atom devs actively don't want it on Ubuntu. And Unity despite my affection towards it it still has a sluggish feel to it even slower then KDE 5 which is really saying something about how i feel Unity has been optimized. This problem also seems to bleed into the whole system as it feels like performance is different on every reboot for what ever reason. This might be due to the fact it seems to do hidden kernel updates in the background using a ton of CPU power slowing to whole system down to a halt.
+
+So would i recommend Ubuntu? mostly no. If someone is new to Linux and wanted to try an easy distro i would point them to Manjaro as it has tons more base options for the DE first party supported! and for more advanced users wanting a simple easy desktop to use i would point them more towards Fedora, Angergos even Void has some nicely pre made desktop environments! As for would i use it myself? Well for servers yes Desktop no. For servers Ubuntu is amazing it has every package or library you could want it's kept up to date it get security patches quickly you know how long you have per install before you have to update! It just all makes for a nice simple server managing experience.
+
+Thanks for reading! if you have any issues, questions or anything else please feel free to contact me via [Email](mailto:blog@boops.me) If you wish with my GPG key [Here](https://frgl.pw/keys/Sir_Boops.txt) or [Twitter](https://twitter.com/Sir_Boops)!

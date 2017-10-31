@@ -5,197 +5,359 @@
     <description>Just a blog for a bored internet user.</description>
     <link>https://boops.me/</link>
     <atom:link href="https://boops.me/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 20 Oct 2017 12:43:59 -0600</pubDate>
-    <lastBuildDate>Fri, 20 Oct 2017 12:43:59 -0600</lastBuildDate>
+    <pubDate>Tue, 31 Oct 2017 07:31:29 -0600</pubDate>
+    <lastBuildDate>Tue, 31 Oct 2017 07:31:29 -0600</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
-        <title>Rolling Release Vs Planned Releases</title>
-        <description>&lt;p&gt;A rolling release is as it sounds it is a single version of a version-less release. Sounds weird right? well let me put it into easier to understand context for you. You might know about Arch Linux if you don’t it is a rolling release Distro that means there is only the initial release version of Arch That is always kept up to date. See a single version of a version-less release! simple right?&lt;/p&gt;
+        <title>Blocking/Redirecting websites via DNS</title>
+        <description>&lt;p&gt;One of the simplest ways to block a website on you network is via DNS hijacking this allows you to return any response you wish in place of the actual request. Using this for dead simple and basic website blocking can be useful for many network setups in fact this is what &lt;a href=&quot;https://github.com/pi-hole/pi-hole&quot;&gt;PI-Hole&lt;/a&gt; uses to block ads for home networks. Now before we go any further remember this should not be used if you need to with 100% certainty block a website as if it’s easy to create the block it’s also just as easy to get around the block and getting around this block is as simple as changing your DNS server to another one!&lt;/p&gt;
 
-&lt;p&gt;Now Planned release or versioned(?) releases also are as they sound a Distro that has been planned to have specific versions of software like Ubuntu version X will only ever get version X of software with security updates so by the EoL (End Of Life) of Ubuntu X you will still have version X.Y of that specific piece of software.&lt;/p&gt;
+&lt;p&gt;Now with all that in mind let’s see how to implement this on a network!&lt;/p&gt;
 
-&lt;p&gt;Now that you have an idea of what they are let’s go over some of the pros and cons of each. Starting with planned releases some of the major benefits that come with it are the assurance that a system updating won’t break your system. This coming from the fact that most/all packages in a planned release have a specific version that they stick for for the life of the OS. That little fact also makes planned releases widely used on servers because every time you update the last thing you want is some dependency breaking for another piece of software leading to downtime. On the topic of negatives lets also look into some downsides of planned releases such as the fact that you can get stuck with older software a good example of this is OpenSSL if the version of the Distro you are running is only ever using openSSL 1.0.1 and you need 1.0.2 for example looks like you’re compiling or upgrading your OS to the next version to get that update. This also rolls nicely into my next point if you’re using a planned release then it will become outdated meaning that you will have to do a reinstall or really risk it and try an in place upgrade but which ever of the two you choose they both end with you eventually end up with you upgrading your box and having to redo it or pray the in place upgrade works.&lt;/p&gt;
-
-&lt;p&gt;Rolling back into a more positive vibe (Ha!) lets look at some of the upsides of a rolling release. The first big one is you never have to reinstall once you install the Distro you’ll only ever have to pacman -Syu (Arch update all command) and you’ll have the latest version of everything available for your Distro. This also goes into the next big point of you’ll always have the latest and greatest versions of software a perfect example of this is at the time of writing this the RX480 has just recently been released and the new kernel that has the drivers built in is 4.7. Now if you’re on a rolling release it might take hours or days to get that update but you still know it’s going to be coming pretty quickly this is a huge contrast to a planned release Distro as they have already decided on a specific kernel version for there Distro leaving the users that want/need that drive compiling the kernel themselves or sitting on the beta/alpha branch of their Distro hoping it comes quickly. Wow all this sounds so nice! Well this is where the bad news about rolling releases comes in as you might’ve guessed since it might only take a day~ish to get the newest kernel there is not a lot if any testing being done forcing you to test it and forcing you to hope that the next time you update that some broken patch hasn’t been issued with a large security hole or even an update that as the Arch joke goes “Broke my xorg.conf again”.&lt;/p&gt;
-
-&lt;p&gt;Now personally for my personal home computer i use Void/Arch/Gentoo all rolling releases as for me i don’t mind if i get issues while updating actually sometimes it’s fun to get issues as it can lead to you learning something that you might not have unless this happened. That being said the value to a planned release is huge and unless you have time to tinker with your system or always want/need the latest packages i would suggest you use a planned release as like i said above they are usually very stable and dependable.&lt;/p&gt;
-
-&lt;p&gt;Thanks for reading! if you have any issues, questions or anything else please feel free to contact me via &lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#098;&amp;#108;&amp;#111;&amp;#103;&amp;#064;&amp;#098;&amp;#111;&amp;#111;&amp;#112;&amp;#115;&amp;#046;&amp;#109;&amp;#101;&quot;&gt;Email&lt;/a&gt; or &lt;a href=&quot;https://twitter.com/Sir_Boops&quot;&gt;Twitter&lt;/a&gt;!&lt;/p&gt;
-</description>
-        <pubDate>Wed, 27 Jul 2016 09:49:00 -0600</pubDate>
-        <link>https://boops.me/2016/07/27/09-49-rolling-release-vs-planned-releases.html</link>
-        <guid isPermaLink="true">https://boops.me/2016/07/27/09-49-rolling-release-vs-planned-releases.html</guid>
-        
-        
-      </item>
-    
-      <item>
-        <title>Switching From Bind9 to PowerDNS4</title>
-        <description>&lt;p&gt;Don’t get me wrong their was and still is nothing wrong with bind it’s fast, efficient and supports everything you could want out of a basic DNS server. Catch that? a basic DNS server and that is where my issue with bind comes from their &lt;em&gt;is&lt;/em&gt; a mysql backend for bind floating out their some where on the internets but trying to find documentation or an official repository for it proved much to hard to find. This combining with the fact that i had to setup cron jobs to keep re signing the domains for DNSSEC set the stage nicely for for powerdns to come and sweep me up. My initial tests with it where quite lack luster as while i was trying to set it up before i found the official docs for powerdns and trust me for setting up a mysql backend you want those docs unless you feel like upping the log-level to 7 and trying to reverse engineer from that. Before you ask yes i did that to figure out how SRV records are stored in the database and also yes i feel quite dumb now.&lt;/p&gt;
-
-&lt;p&gt;Back on track i found powerdns while searching how to setup bind with a mysql backend and after finally setting it up all i can say is wow DNSSEC is a dream with powerdns and i do mean that to the fullest extent as if you are to scroll back in this blog you will see a post on how to setup DNSSEC with bind and it’s quite a long post where as with powerdns it’s one command! All of that goes with out saying that it auto re signs the domains so once it’s setup and running you never have to touch it again and to my surprise the MYSQL backend is quite efficient.&lt;/p&gt;
-
-&lt;p&gt;So would i recommend you to start on powerdns? No simply because the features i’m drooling over in this article aren’t useful to most people an amazing example of this is out of the top 50 websites on paypal has DNSSEC enabled where as a large majority have full or partial IPv6 support now comparing that with smaller sites like blogs for example how many have IPv6 at all despite the huge push on website owners to use IPv6. Now put that into terms for DNSSEC a tech that a majority haven’t heard of built on a tech that most people touch once then never again! All that being said if you want the joy of knowing that you are on the cutting edge of DNS tech and the peace the comes with knowing it is now much harder to hijack your domain then yes use powerdns.&lt;/p&gt;
-
-&lt;p&gt;Have a question, concern or just want to tell me something? &lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#098;&amp;#108;&amp;#111;&amp;#103;&amp;#064;&amp;#098;&amp;#111;&amp;#111;&amp;#112;&amp;#115;&amp;#046;&amp;#109;&amp;#101;&quot;&gt;email me!&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Thu, 21 Jul 2016 14:27:00 -0600</pubDate>
-        <link>https://boops.me/2016/07/21/14-27-switching-from-bind9-to-powerdns4.html</link>
-        <guid isPermaLink="true">https://boops.me/2016/07/21/14-27-switching-from-bind9-to-powerdns4.html</guid>
-        
-        
-      </item>
-    
-      <item>
-        <title>SSH Tunnels</title>
-        <description>&lt;p&gt;You may have heard about SSH tunneling. About what it can do how it works etc etc. But today I’m going to show you the three main tunnel/super useful tunnels that you can quickly setup over SSH.&lt;/p&gt;
-
-&lt;ol&gt;
+&lt;ul&gt;
   &lt;li&gt;
-    &lt;p&gt;Dynamic setup using the -D &lt;port number=&quot;&quot;&gt; flag while opening the SSH connection it sets the SSH connection to also act as a socks server allowing applications that support socks (Firefox for instance) to connect and communicate through the remote server. This can be quickly used to tunnel your connection to your home for instance allowing you to securely browse your local network while anywhere securely. This can also be used to quickly jump over firewalls on public Wi-Fi being said though they would have to allow SSH in the first place. Full example of how to create and use a dynamic tunnel is `ssh &lt;user&gt;@&amp;lt;address&amp;gt; -D &lt;port number=&quot;&quot;&gt;` That will open the connection then once you login you tell the application the supports socks to connect to `127.0.0.1:&lt;port number=&quot;&quot; you=&quot;&quot; used=&quot;&quot;&gt;` and their you go an encrypted tunnel to your server that you can use to browse the web!&lt;/port&gt;&lt;/port&gt;&lt;/user&gt;&lt;/port&gt;&lt;/p&gt;
+    &lt;p&gt;The first thing you’re going to need is a DNS reslover/forwarder running &lt;a href=&quot;https://www.unbound.net/&quot;&gt;Unbound&lt;/a&gt;.&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;Local port forwarding. This can take a minute to wrap your head around as it’s like normal port forwarding just in reverse as it forwards the defined port from your end to the server you are connecting to so for example when you local forward port 7777 when a process on your system tries to connect to *:7777 it will connect though the SSH tunnel to the remote host. Kinda confusing right? But this does have it uses and the best example that comes to mind is syncthing. Syncthing has a webgui that allows it to administer it and of course for security reasons you would not want that facing the internet as someone will find it and attempt to brute force it so that way i secured mine while still using a password i can remember is by making it only serve the webgui over localhost then use a local port forward on my client to connect to it over a secure session. Now to use local port forwarding you use the -L flag as such &lt;code class=&quot;highlighter-rouge&quot;&gt;ssh &amp;lt;user&amp;gt;@&amp;lt;address&amp;gt; -L &amp;lt;local ip to listen on&amp;gt;:&amp;lt;local port&amp;gt;:&amp;lt;remote ip to forward to&amp;gt;:&amp;lt;remote port to forward to&amp;gt;&lt;/code&gt; Remebemer that the if you do not define the first IP it will default to 127.0.0.1 or ::1.&lt;/p&gt;
+    &lt;p&gt;Now onto blocking. if you want to simply block a website such as &lt;code class=&quot;highlighter-rouge&quot;&gt;google.com&lt;/code&gt; you would add the following line &lt;strong&gt;ABOVE&lt;/strong&gt; the forward zone and &lt;strong&gt;WITH&lt;/strong&gt; the dot after the TLD
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+local-zone: &quot;google.com.&quot; static
+&lt;/code&gt;
+Boom! Google will no longer resolve on you network!&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;Remote port forwarding. This type of tunnel is super handy for tons of applications such as temporary port forwarding if your network has a device that you can SSH into or even permanent open ports if you use a program like autossh to keep the connection open so you could have a webserver in your home without using your personal IP or if you have a DHCP address this would also allow you to connect to your homes internal network via a static IP on a VPS! To setup remote port forwarding is only slightly harder to do then the previous two as inside of your sshd_config file you have to set &lt;code class=&quot;highlighter-rouge&quot;&gt;GatewayPorts yes&lt;/code&gt; and if you don’t do this the connection won’t work. Now the command to use remote port forwarding as i’m guessing you guessed by now is -R used in the same format as local port forwading so &lt;code class=&quot;highlighter-rouge&quot;&gt;ssh &amp;lt;user&amp;gt;@&amp;lt;address&amp;gt; -R &amp;lt;local ip to listen on&amp;gt;:&amp;lt;local port&amp;gt;:&amp;lt;remote ip to forward to&amp;gt;:&amp;lt;remote port to forward to&amp;gt;&lt;/code&gt;&lt;/p&gt;
+    &lt;p&gt;Now lets say you wanted to redirect &lt;code class=&quot;highlighter-rouge&quot;&gt;google.com&lt;/code&gt; to another page like a warning page or something or just a page that says NO on it. What ever the case it’s just as simple as blocking the page!
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+local-zone: &quot;google.com.&quot; static
+local-data: &quot;google.com. 300 IN A &amp;lt;Some IPv4&amp;gt;&quot;
+local-data: &quot;google.com. 300 IN AAAA &amp;lt;Some IPv6&amp;gt;&quot;
+&lt;/code&gt;&lt;/p&gt;
   &lt;/li&gt;
-&lt;/ol&gt;
+&lt;/ul&gt;
 
-&lt;p&gt;Finally to end this all off i’d just like to remind you to use the -v flag to, It stands for verbose and can really really help you in trying to figure out way you are unable to use your SSH tunnel!&lt;/p&gt;
+&lt;p&gt;This will redirect the domain to the IP you set and from there you can do as you with to the domain!&lt;/p&gt;
 
-&lt;p&gt;Have a question, concern or just want to tell me somthing? &lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#098;&amp;#108;&amp;#111;&amp;#103;&amp;#064;&amp;#098;&amp;#111;&amp;#111;&amp;#112;&amp;#115;&amp;#046;&amp;#109;&amp;#101;&quot;&gt;email me!&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Thanks for reading! if you have any issues, questions or anything else please feel free to contact me via &lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#097;&amp;#100;&amp;#109;&amp;#105;&amp;#110;&amp;#064;&amp;#098;&amp;#111;&amp;#111;&amp;#112;&amp;#115;&amp;#046;&amp;#109;&amp;#101;&quot;&gt;Email&lt;/a&gt; Using &lt;a href=&quot;https://frgl.pw/keys/Sir_Boops.txt&quot;&gt;GNUPG&lt;/a&gt; if you wish. Or via &lt;a href=&quot;https://twitter.com/Sir_Boops&quot;&gt;Twitter&lt;/a&gt;, &lt;a href=&quot;https://mastodon.social/users/Sir_Boops&quot;&gt;Mastodon&lt;/a&gt;!&lt;/p&gt;
 </description>
-        <pubDate>Fri, 15 Jul 2016 09:26:00 -0600</pubDate>
-        <link>https://boops.me/2016/07/15/09-26-ssh-tunnels.html</link>
-        <guid isPermaLink="true">https://boops.me/2016/07/15/09-26-ssh-tunnels.html</guid>
+        <pubDate>Fri, 27 Jan 2017 11:51:00 -0700</pubDate>
+        <link>https://boops.me/2017/01/27/blocking-redirecting-websites-via-dns.html</link>
+        <guid isPermaLink="true">https://boops.me/2017/01/27/blocking-redirecting-websites-via-dns.html</guid>
         
         
       </item>
     
       <item>
-        <title>IPv6</title>
-        <description>&lt;p&gt;Yes, this will be a listed rant article as people who know how computers work in a basic sense know IPv4 but still have no clue as to how IPv6 works and the people who should have taught them IE teachers usually just skip over it with the common excuses that i’m going to list off below.&lt;/p&gt;
+        <title>Playing with OpenBSD</title>
+        <description>&lt;p&gt;I first heard of *BSD several months ago in an off hand comment about FreeNAS and since then I’ve tried FreeBSD, DragonFlyBSD and now OpenBSD and the first biggest lesson I’ve learned, As dumb as it sounds *BSD is not Linux. Duh right? Well saying it aloud makes it sound dumb but you have to remember that i initially thought that the only difference would be the kernel meaning i was thinking it would be along the lines of GNU/BSD. Yes i know now how dumb this all sounds but i write this in hopes of anyone else who wants to try *BSD knows that *BSD uses the BSD userland not the GNU userland and if you’re unsure what i mean by userland give &lt;a href=&quot;https://en.wikipedia.org/wiki/User_space#Overview&quot;&gt;this&lt;/a&gt; a quick read and it should make some more sense.&lt;/p&gt;
 
-&lt;ol&gt;
+&lt;p&gt;Now my thoughts on OpenBSD after using it for only ~a week on two of my VMs. I like it. The default install is quite simple and speedy, Upgrades from version to version are nice the default included apps are quite useful to get yourself setup quickly. The man pages are very very helpful along with the website itself having everything you’ll need to not only get setup but learn how to patch your systems kernel and teach you quite a bit more about how the system itself works! This all along with how well polished the whole system feels overall, This is a bit harder to explain so i urge you to try it out for yourself!&lt;/p&gt;
+
+&lt;p&gt;Now the downsides, Truthfully I’ve not come across many so far but the one slightly annoying was (and this could and most likely is me still not fully understanding OpenBSD) is the lack of EXT4 support as all the drives that i use for storage have where formatted using EXT4 so i ended up having to reformat them to use FFS. Beyond that my only other complaint is the lack of the ability to install java using &lt;code class=&quot;highlighter-rouge&quot;&gt;pkg_add&lt;/code&gt;. Yes i know i can install it from ports but it would still be a nice touch to be able to install via pkg instead of compiling!&lt;/p&gt;
+
+&lt;p&gt;Links!
+* &lt;a href=&quot;http://www.openbsd.org/&quot;&gt;OpenBSD&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Thanks for reading! if you have any issues, questions or anything else please feel free to contact me via &lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#097;&amp;#100;&amp;#109;&amp;#105;&amp;#110;&amp;#064;&amp;#098;&amp;#111;&amp;#111;&amp;#112;&amp;#115;&amp;#046;&amp;#109;&amp;#101;&quot;&gt;Email&lt;/a&gt; Using &lt;a href=&quot;https://frgl.pw/keys/Sir_Boops.txt&quot;&gt;GNUPG&lt;/a&gt; if you wish. Or via &lt;a href=&quot;https://twitter.com/Sir_Boops&quot;&gt;Twitter&lt;/a&gt;, &lt;a href=&quot;https://mastodon.social/users/Sir_Boops&quot;&gt;Mastodon&lt;/a&gt;!&lt;/p&gt;
+</description>
+        <pubDate>Sat, 07 Jan 2017 09:13:00 -0700</pubDate>
+        <link>https://boops.me/2017/01/07/playing-with-openbsd.html</link>
+        <guid isPermaLink="true">https://boops.me/2017/01/07/playing-with-openbsd.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Home Hosting</title>
+        <description>&lt;p&gt;&lt;img src=&quot;https://cdn.frgl.pw/blog/48/1.jpg&quot; alt=&quot;RPI&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The RPI pictured above is what is serving up this blog!&lt;/p&gt;
+
+&lt;p&gt;Ah, home hosting how i got my first taste of of running what goes into the work behind the services we all use everyday. I feel like I’ve looped as i started hosting everything from home to pushing everything to it’s own VPS back to home hosting some items although now it has become much more fun as I’ve learned over time and slowly expanded my home network into something that can securely host something like this blog my own personal MediaWiki and a few other services that I’ve not finished yet but will be attempting to deploy.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 28 Dec 2016 07:13:00 -0700</pubDate>
+        <link>https://boops.me/2016/12/28/home-hosting.html</link>
+        <guid isPermaLink="true">https://boops.me/2016/12/28/home-hosting.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>So long Gitlab!</title>
+        <description>&lt;p&gt;Ah Gitlab, You’re so pretty but have many, many faults. Top three being: Backups are very flaky, The application itself it very resource hungry and takes quite a long time to start, Finally a self hosted 11 repo limit? Jumping into a more detailed look of each of the reasons, For backups I’ve tried them twice the first time was using an older Gitlab version and trying to restore on a newer version. This can be semi-excused as version jumps can be hard to restore from. The second time though it was wasn’t changing versions and this one managed to destroy the install so perfectly that that install never worked again, Only spitting out 50X HTTP errors no matter what was done to it. Gitlab once it is started is not to resource hungry but starting Gitlab or updating Gitlab would take minutes to start to several minutes to update and 2.5~GB of RAM to do so. This final reason might have been an issue with my install as i can’t seem to find any specific info about it anywhere but after creating eleven projects Gitlab notified me that i have reached my project limit and would be unable to create any more. At first i thought it was going to be something as simple as raising the project limit for admins but after searching for roughly an hour and unable to find any documentation on that specific issue i finally caved and turned to GOGS.&lt;/p&gt;
+
+&lt;p&gt;By contrast GOGS seems to have a dead simple backup system DB dump plus taring a folder being all that is needed, It is amazingly light starting it only a few seconds and updating as fast as you are able to clone the repo. And no project limits you cannot change! Now my option may change after using GOGS for a while as it does with almost any peice of software but so far the only downside i can see is this switch is i find Gitlab looks slightly better then GOGS!&lt;/p&gt;
+
+&lt;p&gt;Links:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://about.gitlab.com/&quot;&gt;Gitlab&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://gogs.io/&quot;&gt;GOGS&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Thanks for reading! if you have any issues, questions or anything else please feel free to contact me via &lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#097;&amp;#100;&amp;#109;&amp;#105;&amp;#110;&amp;#064;&amp;#098;&amp;#111;&amp;#111;&amp;#112;&amp;#115;&amp;#046;&amp;#109;&amp;#101;&quot;&gt;Email&lt;/a&gt; Using &lt;a href=&quot;https://frgl.pw/keys/Sir_Boops.txt&quot;&gt;GNUPG&lt;/a&gt; if you wish. Or via &lt;a href=&quot;https://twitter.com/Sir_Boops&quot;&gt;Twitter&lt;/a&gt;, &lt;a href=&quot;https://mastodon.social/users/Sir_Boops&quot;&gt;Mastodon&lt;/a&gt;!&lt;/p&gt;
+</description>
+        <pubDate>Sat, 24 Dec 2016 06:57:00 -0700</pubDate>
+        <link>https://boops.me/2016/12/24/so-long-gitlab.html</link>
+        <guid isPermaLink="true">https://boops.me/2016/12/24/so-long-gitlab.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>My Strange Tags</title>
+        <description>&lt;p&gt;If you’re reading this you most likly are wondering why i tagged a post like i’m brain dead. Well you’re not to far from the truth as i use an auto tagger to tag posts for me based on the most popular tags on a post. If you want to see the code it’s &lt;a href=&quot;https://git.frgl.pw/Sir_Boops/Boopblr/src/master/src/main/java/me/boops/tags/FindTop.java&quot;&gt;Here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you don’t quite understand what i mean by that. In this example we’ll have three posts&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Post A: &lt;code class=&quot;highlighter-rouge&quot;&gt;#nice #cool #cute&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Post B &lt;code class=&quot;highlighter-rouge&quot;&gt;#fur #cute #fluffy #amaz&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Post C &lt;code class=&quot;highlighter-rouge&quot;&gt;#cool #cute #amazing&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Now that we have three posts and their tags we can sort them by how many times they have been used&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;#nice&lt;/code&gt; Uses -&amp;gt; 1&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;#cool&lt;/code&gt; Uses -&amp;gt; 2&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;#cute&lt;/code&gt; Uses -&amp;gt; 3&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;#fur&lt;/code&gt; Uses -&amp;gt; 1&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;#fluffy&lt;/code&gt; Uses -&amp;gt; 1&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;#amaz&lt;/code&gt; Uses -&amp;gt; 1&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;#amazing&lt;/code&gt; Uses -&amp;gt; 1&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;So now that we have usage counts using the same logic as the script and appending these tags to the post we will end up using the tags &lt;code class=&quot;highlighter-rouge&quot;&gt;#cute #cool #nice&lt;/code&gt;. The final tag coming from the top as the final five tags all have a usage value of one.&lt;/p&gt;
+</description>
+        <pubDate>Thu, 22 Dec 2016 10:14:00 -0700</pubDate>
+        <link>https://boops.me/2016/12/22/my-strange-tags.html</link>
+        <guid isPermaLink="true">https://boops.me/2016/12/22/my-strange-tags.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Certbot/Letsencrypt Setup on a non-supported OS</title>
+        <description>&lt;p&gt;If your like me and prefer to use a different distro other then Ubuntu or CentOS for servers you might have also had this problem of &lt;code class=&quot;highlighter-rouge&quot;&gt;Unable to bootstrap or your OS&lt;/code&gt; And the link that it spits out doesn’t have much information at all. Now bootstrapping certbot is really quite easy and for this tutorial i’m going to be using Void but the process will be the same on any other unsupported distro.&lt;/p&gt;
+
+&lt;ul&gt;
   &lt;li&gt;
-    &lt;p&gt;“Its usage is not wide spread enough”. Let me start my response to this with AHHHHHH…Ok i don’t think many of the people who say this think it though to its logical end as why would a company put in the effort into going dual stack or IPv6 only of only 10%~ of their customers are using it? This one hurts more then anything from the reason above as this also means that a large chunk of admins in the world. And that’s how you end up with Amazons Route 53 setup IPv4 only DNS.&lt;/p&gt;
+    &lt;p&gt;The first thing you need is the dependencies. For certbot this mostly means Python witch makes this super easy as on Void the command to install all the system dependencies is &lt;code class=&quot;highlighter-rouge&quot;&gt;xbps-install -S git python python-virtualenv python-pip gcc gcc-c++ python-devel libressl-devel libffi-devel&lt;/code&gt; If you’re using a different distro simple install the equivalent packages on your system and you’re good to go!&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;“It’s not as safe!” This comes from the fact that a long time ago when you would allow IPv6 auto-configuration it would allow anyone who knew your IPv6 address to get your devices MAC address. Not to downplay this as it is a real issue it has since been solved via IPv6 privacy extensions that as far as I’ve seen basically every IPv6 enabled device has at this point.&lt;/p&gt;
+    &lt;p&gt;Certbot creates itself a virtual environment using the &lt;code class=&quot;highlighter-rouge&quot;&gt;python-virtualenv&lt;/code&gt; package this helps make bootstrapping super easy as from here just clone the certbot repo &lt;code class=&quot;highlighter-rouge&quot;&gt;git clone https://github.com/certbot/certbot&lt;/code&gt; Then &lt;code class=&quot;highlighter-rouge&quot;&gt;cd&lt;/code&gt; into the newly cloned certbot directory and run the command &lt;code class=&quot;highlighter-rouge&quot;&gt;./tools/venv.sh&lt;/code&gt; This will run a script that creates the virtual environment for certbot to run in and may take a while so i would suggest going to grab some more tea!&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;“It’s Hard!” I am not quote sure what one hurts more this or point one. Most of the people i know as soon as they are having network issues disable IPv6 which in most cases is quite funny as most people also do not have IPv6 in their house meaning they are disabling something that is already not there. But back on track now, I will concede that when you first look at an IPv6 address it can be long and scary IE the IPv4 &amp;amp; 6 for this page are 167.114.153.91 &amp;amp; 2607:5300:100:200::704. So yes it may look hard if you are just starting with it but remember what else was hard? learning IPv4 but now that you know IPv4 IPv6 will be quite easy to learn and once you start using it you may like i have even start liking it more!&lt;/p&gt;
+    &lt;p&gt;Now that the virtualenv is has been created we can enter it with the command &lt;code class=&quot;highlighter-rouge&quot;&gt;source venv/bin/activate&lt;/code&gt; You will now see a &lt;code class=&quot;highlighter-rouge&quot;&gt;(venv)&lt;/code&gt; appear if you do congrats! You have just successfully bootstrapped certbot on a non supported OS!&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;“Not as much control over devices” This one nicely ties into the theme of a lot of admins are very lazy just like point three was alluding towards. As this boils down to you haven’t used IPv6 enough or at least explored it enough yet as in my own experience i have been able to do everything i would usually do with DHCP with IPv6 RAs&lt;/p&gt;
+    &lt;p&gt;Using certbot from here is super simple as instead of running &lt;code class=&quot;highlighter-rouge&quot;&gt;./certbot-auto&lt;/code&gt; like normal you only have to run &lt;code class=&quot;highlighter-rouge&quot;&gt;certbot&lt;/code&gt; ! And finally to quit the virtualenv just type &lt;code class=&quot;highlighter-rouge&quot;&gt;deactivate&lt;/code&gt; and it will drop you back into your normal terminal.&lt;/p&gt;
   &lt;/li&gt;
-&lt;/ol&gt;
+&lt;/ul&gt;
 
-&lt;p&gt;Now my finial words on this are tl;dr don’t be a lazy admin just because IPv4 works doesn’t mean you should not at minimum get your back end systems running dual stack or if you’re feeling adventurous your whole network running IPv6 as doing that would help kill point one of the list. and finally if you’re a teacher or anyone teaching people IP works please please please also teach IPv6 after IPv4 as if more people know how it works it will up the adoption rate massively for company’s!&lt;/p&gt;
-
-&lt;p&gt;Have a question, concern or just want to tell me somthing? &lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#098;&amp;#108;&amp;#111;&amp;#103;&amp;#064;&amp;#098;&amp;#111;&amp;#111;&amp;#112;&amp;#115;&amp;#046;&amp;#109;&amp;#101;&quot;&gt;email me!&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Thanks for reading! if you have any issues, questions or anything else please feel free to contact me via &lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#098;&amp;#108;&amp;#111;&amp;#103;&amp;#064;&amp;#098;&amp;#111;&amp;#111;&amp;#112;&amp;#115;&amp;#046;&amp;#109;&amp;#101;&quot;&gt;Email&lt;/a&gt; If you wish with my GPG key &lt;a href=&quot;https://frgl.pw/keys/Sir_Boops.txt&quot;&gt;Here&lt;/a&gt; or &lt;a href=&quot;https://twitter.com/Sir_Boops&quot;&gt;Twitter&lt;/a&gt;!&lt;/p&gt;
 </description>
-        <pubDate>Mon, 11 Jul 2016 08:55:00 -0600</pubDate>
-        <link>https://boops.me/2016/07/11/08-55-ipv6.html</link>
-        <guid isPermaLink="true">https://boops.me/2016/07/11/08-55-ipv6.html</guid>
+        <pubDate>Tue, 06 Dec 2016 06:30:00 -0700</pubDate>
+        <link>https://boops.me/2016/12/06/certbot-letsencrypt-setup-on-a-non-supported-os.html</link>
+        <guid isPermaLink="true">https://boops.me/2016/12/06/certbot-letsencrypt-setup-on-a-non-supported-os.html</guid>
         
         
       </item>
     
       <item>
-        <title>Why You Shouldn&#39;t Use A VPN Service</title>
-        <description>&lt;p&gt;You never know. /post&lt;/p&gt;
+        <title>How to stream to multiple websites at once</title>
+        <description>&lt;p&gt;If you’ve ever streamed before or watched streams you’ll know that you have many choices when it comes to streaming platforms and want to stream to multiple of them. The only thing holding you back if you suffer the same terrible luck as me is your limited slow upstream meaning you can only blast out to one at best. The way around this? a rebroadcasting box! It is exactly as it sounds a server that when you stream to it will automatically copy the stream and push it to any/all services you want. Including itself so you can have saved recordings of your stream online instead of having to re upload any one you wish to use.&lt;/p&gt;
 
-&lt;p&gt;No but on a more serious note you have no idea who really has access to the “wires” that you are using and for a moment lets say their is one VPN provider that is 100% true to their word of they track nothing log nothing and they are perfectly secure (Yes i know this is not possible but this is just an example) unless you are using full ipv6 and if you’re reading this there is a 90%~ percent chance (based of google ipv6 stats) that you’re not using it you’ll be sharing that ipv4 with a whole lot of other people meaning that you’ll likely hit every spam filter on any site you go to with one and there is a good chance that you’ll be blocked from some or even many sites not because you have done something malicious towards the site but from the fact that the ip you’re using has a really high chance of being on blacklists from being a know VPN exit node. Phew and remember that is in a best case scenario when you start to factor in things like Well you don’t truly know who is watching the connection and if and arnt logging it plus if they are in the US they could have been issued a gag order by the government preventing them from telling you that the government is watching you (Hi NSA Bot!). Now at this point you might be thinking oh god this might be happening to me or holy crap take your tin foil hat off! To which i reply i just got it fitted! but yes as the only true way to obtain true privacy is to pay for a dedicated server with bitcoin you mined and only connect though public hot spots with a long range antennae and while a few might &lt;em&gt;cough&lt;/em&gt; stallman &lt;em&gt;cough&lt;/em&gt; might do something like this or more even i know that 99.99999% of you will never even attempt to mimic that setup. Now to the original group of people thinking oh god maybe this is happening to me! Never fear an moderately easy fix is here called openvpn or a easy way to allow you to host your own VPN server/client setup without using SSH tunnels as fun as they are. What are the daw back of this setup? well alot of VPS/KVM Hosts don’t allow VPN software in the first place so you’ll have to find one that does near you so you can play games even under the VPN with little to no difference to your ping. Then for the up sides remember that ipv6 i was taking about? does your ISP not offer it yet but you want it? Well if you can find a dual stack host you can easily route public addresses though the VPN tunnel or even use NAT. i know someone shuddered reading that! Overall if you value your privacy in any from or even just want to for IPv6 i would suggest OpenVPN as you can only trust your self.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Before we start you should quickly read over how to compile NGINX &lt;a href=&quot;https://boops.me/how-to-compile-nginx/&quot;&gt;Here&lt;/a&gt;, as it covers the basics of compiling NGINX such as needed libraries for compiling as those are of course required!&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;So now that you’ve read over that why don’t we quickly download and compile! First thing to do if of course download the latest stable version of NGINX and NGINX-RTMP ( A Plugin for NGINX ) to your box. Make sure you check what the current stable version of &lt;a href=&quot;https://nginx.org/en/download.html&quot;&gt;NGINX&lt;/a&gt; and &lt;a href=&quot;https://github.com/arut/nginx-rtmp-module/releases&quot;&gt;NGINX-RTMP&lt;/a&gt; are as when you are reading this they might be widely out of date! After that you’ll want to download them like such below! 
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+wget https://nginx.org/download/nginx-1.10.2.tar.gz
+wget https://github.com/arut/nginx-rtmp-module/archive/v1.1.10.tar.gz
+&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Once have downloaded them we need to untar the downloaded. The &lt;code class=&quot;highlighter-rouge&quot;&gt;xvaf&lt;/code&gt; flags on the command mean in order: eXtract, Verbose, Any &amp;amp; Force meaning this tar command will decompress almost any tar file!
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+tar -xvaf nginx-1.10.2.tar.gz
+tar -xvaf v1.1.10.tar.gz
+&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Now we want to enter the nginx directory that we just extracted then compile with the extra addon in the folder above the directory we can do this simply by running the below commands. Like i said earlier you can add plenty more things into NGINX with configure flags but i will only be using the necessary ones as more features can be your quest to figure out!
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+cd nginx-1.10.2/
+./configure --add-module=../nginx-rtmp-module-1.1.10/ --prefix=/etc/nginx --with-ipv6
+&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Now that NGINX is configured we want to compile and install. If you’d like to compile faster you can use the first command below else use the lower one as it will always work. Simply replace &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;cpu cores +1&amp;gt;&lt;/code&gt; with a number
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+make -j&amp;lt;cpu cores +1&amp;gt; &amp;amp;&amp;amp; make install
+make &amp;amp;&amp;amp; make install
+&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Congrats NGINX with the addon NGINX-RTMP has been compiled and installed to the directory &lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/nginx/&lt;/code&gt; with the config file located in &lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/nginx/conf/&lt;/code&gt;. That is out next target as this is where the magic happens!&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;We now want to enter the directory &lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/nginx/conf/&lt;/code&gt; and edit the nginx.conf file and edit it using what ever text editor you like or nano as it is quite easy. This can be done by running the nano command followed by what you want to edit example &lt;code class=&quot;highlighter-rouge&quot;&gt;nano nginx.conf&lt;/code&gt;. Once inside if you plan to also use this server for a website scroll down to the bottom of the config and add the following lines. Replacing anything wrapped in &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;&amp;gt;&lt;/code&gt; with your strings 
+```
+rtmp {
+ server {
+ listen 1935;
+ allow publish &lt;your ip=&quot;&quot;&gt;;
+ chunk_size 4096;
+application &lt;some app=&quot;&quot; name=&quot;&quot;&gt; {
+live on;
+record off;
+push rtmp://ingest-tor.beam.pro:1935/beam/&lt;key&gt;;
+push rtmp://live-jfk.twitch.tv/app/&lt;key&gt;;
+push rtmp://a.rtmp.youtube.com/live2/&lt;key&gt;
+push rtmp://live.hitbox.tv/push/&lt;user name=&quot;&quot;&gt;?key=&lt;key&gt;;
+ }
+ application &lt;some test=&quot;&quot; app=&quot;&quot; name=&quot;&quot;&gt; {
+live on;
+record off;
+}&lt;/some&gt;&lt;/key&gt;&lt;/user&gt;&lt;/key&gt;&lt;/key&gt;&lt;/key&gt;&lt;/some&gt;&lt;/your&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
-&lt;p&gt;If you have any questions, comments or anything feel free to &lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#098;&amp;#108;&amp;#111;&amp;#103;&amp;#064;&amp;#098;&amp;#111;&amp;#111;&amp;#112;&amp;#115;&amp;#046;&amp;#109;&amp;#101;&quot;&gt;email me&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;}
+}
+```&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Now in that config you’ll notice that I’ve left some push commands for popular streaming services at the time of writing, If you don’t wish to stream to any of these simply remove those lines. The keen eyed of you will see the line “allow publish” followed by your IP address. We use this to make sure that the restreamer will only allow you you stream from that IP blocking any other requests.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Once you’ve filled those in save and exit nano using &lt;code class=&quot;highlighter-rouge&quot;&gt;CTRL + O&lt;/code&gt; then &lt;code class=&quot;highlighter-rouge&quot;&gt;CTRL + X&lt;/code&gt; and start NGINX by running the binary &lt;code class=&quot;highlighter-rouge&quot;&gt;./sbin/nginx&lt;/code&gt; if you didn’t see any errors that means it’s working! Else make sure your application name does not have any spaces and each line ends with a &lt;code class=&quot;highlighter-rouge&quot;&gt;;&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Now to test it using your streaming software of choice or for me OBS-Studio open up the settings window streams tab and set stream type to &lt;code class=&quot;highlighter-rouge&quot;&gt;custom streaming server&lt;/code&gt; then fill in the &lt;code class=&quot;highlighter-rouge&quot;&gt;URL&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;Stream key&lt;/code&gt; field as is done below. Once you’ve done that click &lt;code class=&quot;highlighter-rouge&quot;&gt;OK&lt;/code&gt; then try and start streaming. You should then see your self start broadcasting as normal then when you check the services you are also streaming to you should see then all come online within 3~ Seconds. If they do enjoy! else if they don’t and you can’t figure out why see the last bit of text to how to ask for help!
+&lt;img src=&quot;https://cdn.frgl.pw/blog/43/1.png&quot; alt=&quot;obs&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Thanks for reading! if you have any issues, questions or anything else please feel free to contact me via &lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#098;&amp;#108;&amp;#111;&amp;#103;&amp;#064;&amp;#098;&amp;#111;&amp;#111;&amp;#112;&amp;#115;&amp;#046;&amp;#109;&amp;#101;&quot;&gt;Email&lt;/a&gt; If you wish with my GPG key &lt;a href=&quot;https://frgl.pw/keys/Sir_Boops.txt&quot;&gt;Here&lt;/a&gt; or &lt;a href=&quot;https://twitter.com/Sir_Boops&quot;&gt;Twitter&lt;/a&gt;!&lt;/p&gt;
 </description>
-        <pubDate>Sun, 26 Jun 2016 19:58:00 -0600</pubDate>
-        <link>https://boops.me/2016/06/26/why-you-shouldnt-use-a-vpn-service.html</link>
-        <guid isPermaLink="true">https://boops.me/2016/06/26/why-you-shouldnt-use-a-vpn-service.html</guid>
+        <pubDate>Sun, 30 Oct 2016 10:43:00 -0600</pubDate>
+        <link>https://boops.me/2016/10/30/how-to-stream-to-mutipule-websites-at-once.html</link>
+        <guid isPermaLink="true">https://boops.me/2016/10/30/how-to-stream-to-mutipule-websites-at-once.html</guid>
         
         
       </item>
     
       <item>
-        <title>Arch As A Server</title>
-        <description>&lt;p&gt;I can hear some Linux server administrators screaming in the distance. Using bleeding edge software in production is always risky as it could break your application or production flow or have security vulnerablys. So why do it then? Simple want that fancy feature that for example NGINX added? Well if you’re using Debian looks like you’re compiling NGINX or waiting for around a year in my experience which if you want something like HTTP/2 that’s quite the wait for such a simple little feature no? Now if you use arch as your server box this also gives you access to the AUR (Arch User Repo) and if you’ve used this before you know that this means that you’ll almost never have to manually compile anything and thanks to pacaur pacman that includes AUR and with that it brings pacaur -Syu and if you haven’t used pacman before that’s full system update so this means even if it’s not inside the arch repos you can get and compile it off the AUR all automatically! All of this and I’ve not even mentioned the best part Arch is a minimal distro this means it starts with almost nothing and you have to add everything that you want no this may sound annoying but it’s actually a bonus as you don’t have to worry that something that you never installed in vulnerable to an attack and you don’t even know you have that package installed. So overall If you want to use Arch as a server OS i would suggest you do BUT only if you have an idea of what you’re doing. Other wise i would say stick to Ubuntu.&lt;/p&gt;
+        <title>Ubuntu</title>
+        <description>&lt;p&gt;Ah Ubuntu, the distro every Linux junkie loves to hate or loves to ironically hate. The ladder I’m also guilty of. But Beyond the “L0l Amazon/Nobuntu” jokes Ubuntu is a very solid system with cool features such as a steady release schedule , Mostly up to date packages, Tons of support, Unity ( Please don’t hurt me! ) And the biggest one of all it’s name.&lt;/p&gt;
+
+&lt;p&gt;But before i go into all of that how did i fare with Ubuntu 16.10? Well starting with the install i booted using UEFI like i enjoy doing as UEFI is the new cool thing for Linux distros but to my dismay i could not get Ubuntu to boot using UEFI with auto partitioning or manual partitioning. The issue to this I’m still not sure but after 3 attempts at a UEFI install i gave in and installed using legacy mode.&lt;/p&gt;
+
+&lt;p&gt;The initial boot of Ubuntu was just as i remember  kinda slow but and with the popup for hot keys blasted in your face. Besides that though everything else went smoothly and before i knew it i had Nightly running and was watching flash videos while downloading more packages!&lt;/p&gt;
+
+&lt;p&gt;Now, How much did i enjoy my time with Ubuntu in this week? Well, it’s another Distro. Yes, it’s has fancy tools baked in that can help beginners to Linux along with a super active forum. In fact my first Linux install was Ubuntu! But for the user that likes the tinker and make very things very specific Ubuntu can almost get their but it just misses the mark, Although i will coincide here as I’m comparing it’s customization options to that of Gentoo and by that comparison the only distros that would fit are source based distros. But Ubuntu is still missing some basic things that i thought would have been added by now like the Atom editor. Why that is missing i have no idea but it’s been missing for so long I’m starting to think that the Atom devs actively don’t want it on Ubuntu. And Unity despite my affection towards it it still has a sluggish feel to it even slower then KDE 5 which is really saying something about how i feel Unity has been optimized. This problem also seems to bleed into the whole system as it feels like performance is different on every reboot for what ever reason. This might be due to the fact it seems to do hidden kernel updates in the background using a ton of CPU power slowing to whole system down to a halt.&lt;/p&gt;
+
+&lt;p&gt;So would i recommend Ubuntu? mostly no. If someone is new to Linux and wanted to try an easy distro i would point them to Manjaro as it has tons more base options for the DE first party supported! and for more advanced users wanting a simple easy desktop to use i would point them more towards Fedora, Angergos even Void has some nicely pre made desktop environments! As for would i use it myself? Well for servers yes Desktop no. For servers Ubuntu is amazing it has every package or library you could want it’s kept up to date it get security patches quickly you know how long you have per install before you have to update! It just all makes for a nice simple server managing experience.&lt;/p&gt;
+
+&lt;p&gt;Thanks for reading! if you have any issues, questions or anything else please feel free to contact me via &lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#098;&amp;#108;&amp;#111;&amp;#103;&amp;#064;&amp;#098;&amp;#111;&amp;#111;&amp;#112;&amp;#115;&amp;#046;&amp;#109;&amp;#101;&quot;&gt;Email&lt;/a&gt; If you wish with my GPG key &lt;a href=&quot;https://frgl.pw/keys/Sir_Boops.txt&quot;&gt;Here&lt;/a&gt; or &lt;a href=&quot;https://twitter.com/Sir_Boops&quot;&gt;Twitter&lt;/a&gt;!&lt;/p&gt;
 </description>
-        <pubDate>Tue, 21 Jun 2016 10:55:00 -0600</pubDate>
-        <link>https://boops.me/2016/06/21/10-55-arch-as-a-server.html</link>
-        <guid isPermaLink="true">https://boops.me/2016/06/21/10-55-arch-as-a-server.html</guid>
+        <pubDate>Sat, 22 Oct 2016 18:09:00 -0600</pubDate>
+        <link>https://boops.me/2016/10/22/ubuntu-2.html</link>
+        <guid isPermaLink="true">https://boops.me/2016/10/22/ubuntu-2.html</guid>
         
         
       </item>
     
       <item>
-        <title>Trying OpenSUSE</title>
-        <description>&lt;p&gt;Why Yes, I do switch distributions quite a bit and by quite a bit i mean i may have went though around four today trying to find one where i liked the look of the base installed desktop. Yes i know that i can just grab a minimal version of any distro i want and throw a good desktop environment on top of it but that’s work and i wanted something easy that worked pretty well out of the box. This is why i decided to try OpenSuSE as last time i used it (Granted that was inside of a VM) it worked great out of the box and looked amazing as it uses KDE plasma and plasma is so sexy but getting back to trying to install openSUSE. The first issue i came across was my own fault but I’m still going to complain because it’s dumb that you can’t do that and by that i mean install from the live DVD. Why? i have zero idea. Now before you say anything no i did not read any of the red text on the page before downloading and writing it to a USB but still come on you should be able to install from a live DVD and not just the net installer. That actually leads me perfectly into my second point the net installer. Wow it is slow to start Yes i know my internet is slow at an amazing six down and one up but holy crap I’m talking 20+ minutes just for the dam installer to get to the initial splash screen with no progress bars! That while annoying i can live though. Now as i go along in the installer i get to the point where i have to partition my drives dam I’m not sure if I’m slow today but that screen took me a good five~ish minutes to figure out. But after that you got it running right? Nope i left the installer to download and partition one and a half hours later it was still on the same step so i re did that whole process again two more times got the same result and said screw it and installed Ubuntu 16.04 for now. Now i do plan on trying opensuse again but perhaps on it’s next net installer release as i have a funny feeling that this one is quite buggy.&lt;/p&gt;
+        <title>Trying Manjaro</title>
+        <description>&lt;p&gt;Manjaro, a pleasant distro based on Arch that comes with several different desktop flavors, Since it is based on Arch you might have been able to guess that it is bleeding edge and uses that latest versions of packages available.&lt;/p&gt;
+
+&lt;p&gt;Installing Manjaro is super simple just point to the drive you want it installed on and spam next. But be warned as this threw me the first time Manjaro from live USB does take quite a while to boot as in 1-3 Minutes but once it does the live environment is nice and smooth!&lt;/p&gt;
+
+&lt;p&gt;Upon first boot into to my newly installed GNOME environment i did the usual and ran an upgrade then rebooted but after that i was unable to log back into GNOME for some reason and after an hour or so playing with it i reinstalled using XFCE and it handled it all perfectly!&lt;/p&gt;
+
+&lt;p&gt;The XFCE environment comes nicely setup with several features baked in such as a GUI based package manager and a nice dark theme by default. The desktop also comes with several pre-installed apps beyond what you usually see included, Including steam which stood out to me the most for being an odd app to include by default. All of the other pre installed apps are the ones you would be used to seeing such as libre office, Disk writer, GIMP, Firefox ect, ect.&lt;/p&gt;
+
+&lt;p&gt;Now one of the coolest things I’ve seen in a distro in a while is a kernel version picker. As the name implies it allows you to choose what kernel you’d like to run and proceeds to reinstall any kernel specific apps such as the graphics drivers for that version. Beyond that it feels just like Arch as it uses pacman as the bleeding edge of package versions.&lt;/p&gt;
+
+&lt;p&gt;So would i recommend this to people? Yes, since it is based on Arch that allows you to use the Arch wiki for issues the Manjaro forums/IRC seem quite active and it really gives off the Ubuntu feeling of i work great with a GUI but you can also use the command line if you wish. That in my eyes makes it perfect for people just starting with Linux! As for would i use it again? I can see myself installing this on a laptop that i use daily as it is made so you don’t have to use the command line which is perfect for those lazy days when i only feel like clicking. So overall i do like Manjaro and can see where it tries to fit and as of the time of writing this seems to be fitting quite well!&lt;/p&gt;
 </description>
-        <pubDate>Mon, 13 Jun 2016 18:46:00 -0600</pubDate>
-        <link>https://boops.me/2016/06/13/18-46-trying-opensuse.html</link>
-        <guid isPermaLink="true">https://boops.me/2016/06/13/18-46-trying-opensuse.html</guid>
+        <pubDate>Sat, 15 Oct 2016 12:21:00 -0600</pubDate>
+        <link>https://boops.me/2016/10/15/trying-manjaro.html</link>
+        <guid isPermaLink="true">https://boops.me/2016/10/15/trying-manjaro.html</guid>
         
         
       </item>
     
       <item>
-        <title>From VoidLinux To Antergos Linux</title>
-        <description>&lt;p&gt;It’s distro hopping time again but i must say i was kinda sad to move away from Void as that was quite fun to learn about plus void was pretty stable for being a bleeding edge rolling release but time goes on and i decided to try Antergos now because i don’t read that much about a distro before switching to it as it’s more fun to just jump and go for it it hit me as a surprise that Antergos was just a fancy installer for Arch Linux whoa. Now this is far from a bad thing as arch is also a very good and the only one that could out rank void for me as Arch has the AUR making packages that somehow not included in the repos super easy to install not to mention if you have Pacaur then it turns into one command! As i noticed this fact that i was now installing a pre-configured version of Arch on my PC i was kinda angry no not at the fact that it was an installer for arch and no not that it was pre-configured but by the fact that no one ever mentioned this distro to me back when i was using Arch a few weeks ago i must have spent a good two to four hours trying to find all the fonts i was missing and still never did if i might add! But putting all that aside Antergos as it stands right now is a great installer for Arch as it lets you choose your desktop environment installs all the fonts you’ll need to get started (Yes they’re still some missing but they are Japanese fonts so i can’t really fault them for not installing those) and i’m happy i did decide to try it as next time i install Arch I’ll most likely be using Antergos again!&lt;/p&gt;
+        <title>How to compile NGINX</title>
+        <description>&lt;p&gt;Building an application from source can be a very daunting especially if you’ve never had or wanted to but compiling some apps ( Or all if you use Gentoo! ) can be quite helpful as the pre-compiled binary’s that come with your package manager might be widely out of date..Debian. This is when compiling is quite handy as you can quickly update from one version to the next with out having to wait or someone else to do it for you. Plus it also allows you to only add what you need to your running binary this means if you don’t need a feature you don’t have to waste RAM or CPU time on it!&lt;/p&gt;
+
+&lt;p&gt;So, with all that being said how do we compile NGINX. First step is to pick out the versions we want so I’m going to use NGINX v1.11.5 as it is the latest at the time of writing.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Once we have the version picked out we need to download them this can be done as such
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+wget http://nginx.org/download/nginx-1.11.5.tar.gz
+&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Now that we have them downloaded we need to De-compress them since it is a tar files we can use tar for this like so
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+tar -xvaf nginx-1.11.5.tar.gz
+&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Now that we have our two source code directories we will want to cd into the NGINX directory
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+cd nginx-1.11.5
+&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Ok we are almost ready to configure the build! the last thing we need to do is install the needed libraries. If you’re running a Debian based OS ( Like Ubuntu ) you should just be able to copy and paste the command below else you will have to manually find the equivalent libraries on your distro
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+apt-get install gcc g++ libpcre3-dev zlib1g-dev make libssl-dev
+&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Watch out CPU here comes the compiler! now that we have everything we need lets see all the flags we can compile with using
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+./configure --help
+&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;When you run that you should see a large list of flags if you do good everything is working, else try and search up the error as this should have worked if you’ve followed this to here. Around half way down the list you’ll see some flags that add more options for your HTTP server, You can choose what ones you want except the &lt;code class=&quot;highlighter-rouge&quot;&gt;--with-http_ssl_module&lt;/code&gt; as we need this one to flag the SSL module to be included in the final binary that we are going to use!&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;You’ve chosen now have all the flags you want like if you want to add HTTP/2 you can add the flag &lt;code class=&quot;highlighter-rouge&quot;&gt;--with-http_v2_module&lt;/code&gt;. Or you just want a super simple NGINX server that also works! In that case we want to configure using the flags
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+./configure --prefix=/etc/nginx --with-http_ssl_module
+&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Or if you want to add more features like the HTTP/2 example just add it to the end of this command like so
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+./configure --prefix=/etc/nginx --with-http_ssl_module --with-http_v2_module
+&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;As you might be able to guess these configure commands can get quite long. Now before we compile NGINX you’ll notice in the two commands above their is a flag called prefix, This flag defines where this copy of NGINX is going to be installed to so if you run with the above command all the NGINX components will be installed into the directory /etc/nginx. You can change this and point it where ever you want but i recommend leaving it pointed at /etc/nginx&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Now that NGINX is configured we want to run the command &lt;code class=&quot;highlighter-rouge&quot;&gt;make&lt;/code&gt; this will compile all the code and create the NGINX binary for us to run. This can take a bit depending on how much RAM and how powerful your CPU is.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Once your done compiling without any errors you’re ready to install NGINX to the directory we defined earlier simply run &lt;code class=&quot;highlighter-rouge&quot;&gt;make install&lt;/code&gt; and that’s it you’ve just compiled NGINX to start it simplly cd into the nginx folder and run &lt;code class=&quot;highlighter-rouge&quot;&gt;./sbin/nginx&lt;/code&gt; now when you open that boxes IP address in a web browser you should see welcome to NGINX!&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;One final note for you guys if you inside the nginx folder the NGINX config is located at &lt;code class=&quot;highlighter-rouge&quot;&gt;conf/nginx.conf&lt;/code&gt; and to stop the server run &lt;code class=&quot;highlighter-rouge&quot;&gt;./sbin.nginx -s stop&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Thanks for reading! if you have any issues, questions or anything else please feel free to contact me via &lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#098;&amp;#108;&amp;#111;&amp;#103;&amp;#064;&amp;#098;&amp;#111;&amp;#111;&amp;#112;&amp;#115;&amp;#046;&amp;#109;&amp;#101;&quot;&gt;Email&lt;/a&gt; If you wish with my GPG key &lt;a href=&quot;https://frgl.pw/keys/Sir_Boops.txt&quot;&gt;Here&lt;/a&gt; or &lt;a href=&quot;https://twitter.com/Sir_Boops&quot;&gt;Twitter&lt;/a&gt;!&lt;/p&gt;
 </description>
-        <pubDate>Sun, 12 Jun 2016 05:00:00 -0600</pubDate>
-        <link>https://boops.me/2016/06/12/05-00-from-voidlinux-to-antergos-linux.html</link>
-        <guid isPermaLink="true">https://boops.me/2016/06/12/05-00-from-voidlinux-to-antergos-linux.html</guid>
-        
-        
-      </item>
-    
-      <item>
-        <title>Remove The Port From A Minecraft Server IP</title>
-        <description>&lt;p&gt;&lt;strong&gt;DNS&lt;/strong&gt; It’s an amazing thing that without the internet would be no where near what it has become today. But today we’re going to focus on SRV and A Records as it’s how we can define IPs and ports using DNS.&lt;/p&gt;
-
-&lt;p&gt;First a few definitions. We’ll start with an A Record. An A record is one of the most used type of DNS record and is used to simply define an IPv4 address that’s the “normal” type of IP address you’ll currently see and example being 127.0.0.1.&lt;/p&gt;
-
-&lt;p&gt;Next up is the SRV record as it sounds a SRV record is a service record and is used to define a service on a network using priority’s and weights to allow some basic load balancing. The SRV record combines with an A or AAAA record to allow you to define an IP and a port of a specific service.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;&lt;strong&gt;Now&lt;/strong&gt; that we know all that you should kinda get the idea of what I’m going to show you since all we have to do is set an A record pointing to you’re minecraft servers IP and then setup a minecraft SRV record to point to your A record!&lt;/p&gt;
-
-&lt;p&gt;Well before we start you’ll need two things. A minecraft server and a domain. If you don’t have a domain depending on what you want it might only cost 1$ USD/Year so if you don’t have one yet since i will be using name.com since i know they work for this and i already have a domain with them.&lt;/p&gt;
-
-&lt;p&gt;Alright now that you have your domain we need to setup an A record pointing to your minecraft servers IP this is super simple simply pick a sub domain like mc.yourdomain.com and add you servers IP as so
-&lt;img src=&quot;https://cdn.frgl.pw/blog/16/1.png&quot; alt=&quot;a record&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;As of right now you should be able to connect to your server using mc.yourdomain.com:25566 (Where 25566 is your port number).&lt;/p&gt;
-
-&lt;p&gt;Now the SRV record this is slightly harder but still nice and easy only difference is  you now have 7 fields to fill in. For the service type we want “minecraft” for the protocol we want tcp for weight we want 10 for the port you’ll want to put your servers port in there for the target you’ll want to put your domain in there (The mc.yourdomain.com) in the TTL field we want 300 (seconds) and finally for the priority we want 10. at the end it should look like this:
-&lt;img src=&quot;https://cdn.frgl.pw/blog/16/2.png&quot; alt=&quot;srv record&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Now if everything was done right you should be able to jump back into minecraft and use mc.yourdomain.com to connect to your server! now you can have a pretty domain for your server with out paying for port 25565! :)&lt;/p&gt;
-</description>
-        <pubDate>Wed, 08 Jun 2016 08:33:00 -0600</pubDate>
-        <link>https://boops.me/2016/06/08/08-33-remove-the-port-from-a-minecraft-server-ip.html</link>
-        <guid isPermaLink="true">https://boops.me/2016/06/08/08-33-remove-the-port-from-a-minecraft-server-ip.html</guid>
-        
-        
-      </item>
-    
-      <item>
-        <title>Dual PC Live Streaming</title>
-        <description>&lt;p&gt;&lt;strong&gt;Dual PC Streaming&lt;/strong&gt; Who is it for?. Dual PC streaming is for professional streamers who want the best quilty for their stream that current encoding tech allows for but at the same time allow them to get maintain a high frame rate on their main gaming PC.&lt;/p&gt;
-
-&lt;p&gt;Ok. Now How does it work? Well their are several ways to setup dual PC streaming the first being the one i recommend is using a capture card on your gaming PC and sending the output to the stream PC along with an audio cable coming from your gaming PC into the streaming PC. Why do i recommend you doing it this way? easy dual pc streaming i with this method adds zero extra load to your gaming PC as it’s duties stay the exact same. It can’t be all good right? Well dual PC streaming using this method isn’t all good for the obvious reason that it is very expensive to get into and would require you to have a fully functional PC with a screen and some way for you to easily control it while streaming but beyond that there really is none.&lt;/p&gt;
-
-&lt;p&gt;Now the second option i’m going to talk about in this post. This one is a lot more complicated to setup and only really is useful of you simply want to compress the stream some more before sending it. For this setup you need of course two PCs but now the streaming PC doesn’t need a GPU or a screen even as all it does is host a NGINX-RTMP server and run FFMPEG both of which are controlled from the command line. The full setup of this method looks like such you have your Gaming PC with OBS running on it streaming at an absurdly high bitrate like 100,000 Kbps for example with near zero encoding but instead of streaming to twitch you stream to the local second PC that then ingests the feed uses its processing power to compress the video feed to something reasonable like 2,500 Kbps and send it to twitch. Would i recommend this? Well if you happen to have a second PC lying around ya go for it as the only real negative effect on your stream will be the slight bit of extra delay (1-2 Sec~). Would i recommend someone go out and buy a new PC for this? No unless you have money to burn and really want to get all you can out of both of those PCs or have a really slow upload. Plus if you have money to burn you might as well go all out and setup the much much better first example!&lt;/p&gt;
-
-&lt;p&gt;If you have any questions, comments or anything feel free to &lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#097;&amp;#100;&amp;#109;&amp;#105;&amp;#110;&amp;#064;&amp;#098;&amp;#111;&amp;#111;&amp;#112;&amp;#115;&amp;#046;&amp;#109;&amp;#101;&quot;&gt;email me&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Sat, 04 Jun 2016 16:58:00 -0600</pubDate>
-        <link>https://boops.me/2016/06/04/16-58-dual-pc-live-streaming.html</link>
-        <guid isPermaLink="true">https://boops.me/2016/06/04/16-58-dual-pc-live-streaming.html</guid>
+        <pubDate>Thu, 13 Oct 2016 13:56:00 -0600</pubDate>
+        <link>https://boops.me/2016/10/13/how-to-compile-nginx.html</link>
+        <guid isPermaLink="true">https://boops.me/2016/10/13/how-to-compile-nginx.html</guid>
         
         
       </item>
