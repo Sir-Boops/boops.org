@@ -1,0 +1,66 @@
+Some quick points you might want to know before reading on:
+1. You pretty much have to use cloudflare with b2 else the bandwidth costs will kill you! ( As of writing 22/01/19 it's 0.01$ per GB )
+2. You will end up having to use my call translator other ones hit high cost endpoints far too often. And as of writing 22/01/19 it's still really iffy.
+3. This is nor supported by mastodon main-line or b2, If you have issues I can try to help but prepare to try and work through them on your own too!
+4. This guide is going to be using docker, It's nearly the same process for non-docker but can be tricky to convert some things to non-docker
+5. The translator has ZERO authentication MAKE SURE it can only be accessed from internal networks
+6. The translator does zero checks before blindly running calls, If you're just plugging it into mastodon and running it it'll be fine but if you're planning to also run other things through this be very carful as it will permanently delete anything you tell it to!
+7. My Fedi handle is @Sir_Boops@sergal.org or if you wish to email me just remove the first @
+8. This guide assumes you have some knowledge of docker and docker-compose
+
+Now, To those brave few willing to try this off we go~
+
+1. Starting off on backblaze b2 you're going to want to create a new bucket you can name this bucket what ever it
+ allows you to just make sure that the bucket is public and that you'll remember the name you've chosen as you'll need it later to launch the translator!
+
+2. In the 'Buckets' tab on the b2 webpage you should now see your new bucket slightly above that is a link that reads 'Show Account ID and Application Key'
+ Open that and create a new 'Read and Write' key for your new bucket, Once created make sure to write down the two strings that are generated as these will
+ grant access to the translator!
+
+3. While still on the b2 site hop into the 'Browse Files' tab and open up files for your bucket. Upload a little test file
+ to your bucket, Any little file will do once that is uploaded refresh the page and you should see your file!
+ At the and of the line the filename is on you should now see a little i in a circle open that and copy the friendly URL
+ it should look something like 'https://f002.backblazeb2.com/file/sergal-assets/favicon.ico' now what you want from this is the
+ domain so the domain in my example would be 'f002.backblazeb2.com' now wee go off the cloudflare
+
+4. In the cloudflare dash open up your domain and hop into the 'DNS' tab you'll now want to add two domains
+ the first one being a dummy redirect domain ( This will make sense later ) the other being the one you want end users to see!
+ both of these should be CNAMEs pointing to the domain we got in the previous step! Once those are added make sure those two domains
+ are using the cloudflare CDN ( Orange cloud next to them not the grey one ) as else you'll end up paying for bandwidth!
+
+5. While still in the 'DNS' tab scroll to the top of the page and switch to the 'Page Rules' tab by default you will get 3 page rules
+ for free which is perfect as you will be using two of them! The first rule you want to add is going to be a 'Forwarding URL' for the
+ 'URL matches' bit at the top of the popup you'll want to put your dummy domain followed by a '/*' example would be in my case I used 'b2p.sergal.org'
+ for the dummy domain so I would use 'b2p.sergal.org/*' then in the 'Forwarding URL' section select redirect type '302' ( 301 should be find but if something happens
+ client caching sucks shit ) then for the 'Destination URL' you are going to want to use your public facing URL adding 'https://' to the start and '/file/$your_b2_bucket_name/$1'
+ an example of this would be my public facing URL is b2.sergal.org and my bucket name is sergal-assets so that would make 'https://b2.sergal.org/file/sergal-assets/$1'
+ KEEP THE '$1' AT THE END it is needed to save the path the client is trying to access! now 'Save and deploy' this rule!
+
+6. Now add a new rule, This one is going to be for your public facing URL followed by '/*' example my public URL is b2.sergal.org so I would put
+ 'b2.sergal.org/*' then you'll want to add a new setting same as last time except now you want to select 'Browser Cache TTL' setting that one to 'a year'
+ followed by that add another setting this time 'Edge Cache TTL' and setting that one to 2 hours. You should also see a new option called 'Order' set this
+ rule to last and 'Save and Deploy' it!
+
+7. Now the fun begins! On your box run the command ( while replacing $string with what you wrote down ) in a tmux session
+ 'docker run -it -p 172.17.0.1:9000:9000 sirboops/trans-s3-b2 /trans-s3-b2 $b2_id_key $b2_sec_key $b2_bucket_name 0.0.0.0'
+ If you've used docker-compose for any amount of time you should be able to translate that into something for docker-compose if
+ you wish but for now this will work!
+
+8. Before you go on from here be sure to backup your env.prod mastodon config just in-case! Inside your env.prod file you'll want to uncomment
+ and fill in the following options with their respective values any string that starts with a '$' here should be replaced by your local value!
+
+ S3_ENABLED=true
+ S3_BUCKET=$your_b2_bucket_name
+ AWS_ACCESS_KEY_ID=$your_b2_id_key
+ AWS_SECRECT_ACCESS_KEY=$your_b2_secrect_access_key
+ S3_REGION=us-east-1
+ S3_PROTOCOL=https
+ S3_HOSTNAME=172.17.0.1:9000
+
+ S3_ENDPOINT=http://172.17.0.1:9000
+
+ S3_ALIAS_HOST=$your_dummy_redirect_domain
+
+9. Now with any luck you should be able to restart all the mastodon services and everything should start to ~work~ you can check on the docker
+ container we launched before to ensure that is it working as it'll spit out what it's done and if it failed or not! Now all is left to do os copy eveything from
+ your old storage host to b2 and for that you might want to check out the b2 program but that's not going to be covered here ;p
