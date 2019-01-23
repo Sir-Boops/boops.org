@@ -38,8 +38,7 @@ Now, To those brave few willing to try this off we go~
 
 6. Now add a new rule, This one is going to be for your public facing URL followed by '/*' example my public URL is b2.sergal.org so I would put
  'b2.sergal.org/*' then you'll want to add a new setting same as last time except now you want to select 'Browser Cache TTL' setting that one to 'a year'
- followed by that add another setting this time 'Edge Cache TTL' and setting that one to 2 hours. You should also see a new option called 'Order' set this
- rule to last and 'Save and Deploy' it!
+ You should also see a new option called 'Order' set this rule to last and 'Save and Deploy' it!
 
 7. Now the fun begins! On your box run the command ( while replacing $string with what you wrote down ) in a tmux session
  'docker run -it -p 172.17.0.1:9000:9000 sirboops/trans-s3-b2 /trans-s3-b2 $b2_id_key $b2_sec_key $b2_bucket_name 0.0.0.0'
