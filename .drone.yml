@@ -1,18 +1,11 @@
 pipeline:
-    clean:
-        image: alpine:3.9
-        commands:
-            - 'apk add py2-pip'
-            - 'pip install s3cmd'
-            - 's3cmd --access_key=$aws_access_key_id --secret_key=$aws_secret_access_key del s3://boops.org/*'
-
     build:
         image: alpine:3.9
         pull: true
 
     push:
-        image: plugins/s3
+        image: plugins/s3-sync:1
         bucket: boops.org
         source: public/*
-        strip_prefix: public/
-        secrets: [aws_access_key_id, aws_secret_access_key]
+        acl: public-read
+        delete: true
