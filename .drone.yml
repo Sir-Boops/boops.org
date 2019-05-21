@@ -1,4 +1,7 @@
 pipeline:
+    build:
+        pull: true
+
     s3:
         image: plugins/s3
         bucket: boops.org
