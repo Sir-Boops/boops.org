@@ -1,9 +1,10 @@
 pipeline:
     build:
+        image: alpine:3.9
         pull: true
 
     s3:
         image: plugins/s3
         bucket: boops.org
-        source: *
+        source: public/*
         secrets: [aws_access_key_id, aws_secret_access_key]
