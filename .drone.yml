@@ -7,4 +7,5 @@ pipeline:
         image: plugins/s3
         bucket: boops.org
         source: public/*
+        strip_prefix: public/
         secrets: [aws_access_key_id, aws_secret_access_key]
