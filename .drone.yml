@@ -7,6 +7,6 @@ pipeline:
                 from_secret: aws_access_key_id
             secret_key:
                 from_secret: aws_secret_access_key
-            source: public/*
+            source: public/**
             target: /
             strip_prefix: public/
