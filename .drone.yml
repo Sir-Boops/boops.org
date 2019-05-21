@@ -1,0 +1,12 @@
+pipeline:
+    upload:
+        image: plugins/s3
+        settings:
+            bucket: boops.org
+            access_key:
+                from_secret: aws_access_key_id
+            secret_key:
+                from_secret: aws_secret_access_key
+            source: public/*
+            target: /
+            strip_prefix: public/
