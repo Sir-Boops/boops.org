@@ -1,6 +1,6 @@
 pipeline:
     clean:
-        image: alpine:3.9
+        image: alpine:edge
         commands:
             - 'apk add s3cmd'
             - 's3cmd --access_key=$aws_access_key_id --secret_key=$aws_secret_access_key del s3://boops.org/*'
