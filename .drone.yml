@@ -7,6 +7,6 @@ pipeline:
         image: plugins/s3-sync:1
         bucket: boops.org
         secrets: [aws_access_key_id, aws_secret_access_key]
-        source: public/*
+        source: public
         acl: public-read
         delete: true
