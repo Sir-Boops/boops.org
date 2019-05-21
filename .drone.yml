@@ -1,7 +1,6 @@
 pipeline:
-    upload:
+    s3:
         image: plugins/s3
-        settings:
-            bucket: boops.org
-            source: *
-            secrets: [aws_access_key_id, aws_secret_access_key]
+        bucket: boops.org
+        source: *
+        secrets: [aws_access_key_id, aws_secret_access_key]
