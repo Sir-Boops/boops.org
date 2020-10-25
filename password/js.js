@@ -2,6 +2,7 @@ window.onload = function() {
   main();
 };
 
+var anss = "abcdefghijklmnopqrstuvwxyz123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<,>./?\"\';:\\|]}[{=+-_)(*&^%$#@!\`~ "
 var ans = "abcdefghijklmnopqrstuvwxyz123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<,>./?\"\';:\\|]}[{=+-_)(*&^%$#@!\`~"
 var an = "abcdefghijklmnopqrstuvwxyz123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -18,11 +19,21 @@ function main() {
   document.getElementById("box2_2").value = generatePassword(an, 25);
   document.getElementById("box2_3").value = generatePassword(an, 25);
   document.getElementById("box2_4").value = generatePassword(an, 25);
+
+  document.getElementById("box3_0").value = generatePassword(anss, 25);
+  document.getElementById("box3_1").value = generatePassword(anss, 25);
+  document.getElementById("box3_2").value = generatePassword(anss, 25);
+  document.getElementById("box3_3").value = generatePassword(anss, 25);
+  document.getElementById("box3_4").value = generatePassword(anss, 25);
 };
 
 function onClick() {
   if(document.getElementById("length").value > 128 || document.getElementById("length").value < 1) {
     document.getElementById("length").value = 25;
+  }
+
+  if (document.getElementById("type").value == "anss") {
+    document.getElementById("box0_0").value = generatePassword(anss, document.getElementById("length").value);
   }
 
   if (document.getElementById("type").value == "ans") {
