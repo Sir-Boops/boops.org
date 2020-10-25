@@ -4,18 +4,23 @@ window.onload = function() {
 
 
 function main() {
-  for ( var i = 0; i < 5; i++ ) {
-    var obj = document.getElementById("box")
-    if (i+1 < 5) {
-      obj.appendChild(document.createTextNode(generatePassword() + "\n\n"))
-    } else {
-      obj.appendChild(document.createTextNode(generatePassword()))
-    }
-  }
+  let ans = "abcdefghijklmnopqrstuvwxyz123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<,>./?\"\';:\\|]}[{=+-_)(*&^%$#@!\`~"
+  let an = "abcdefghijklmnopqrstuvwxyz123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+  document.getElementById("box0_0").value = generatePassword(ans);
+  document.getElementById("box0_1").value = generatePassword(ans);
+  document.getElementById("box0_2").value = generatePassword(ans);
+  document.getElementById("box0_3").value = generatePassword(ans);
+  document.getElementById("box0_4").value = generatePassword(ans);
+
+  document.getElementById("box1_0").value = generatePassword(an);
+  document.getElementById("box1_1").value = generatePassword(an);
+  document.getElementById("box1_2").value = generatePassword(an);
+  document.getElementById("box1_3").value = generatePassword(an);
+  document.getElementById("box1_4").value = generatePassword(an);
 };
 
-function generatePassword() {
-  var chars = "abcdefghijklmnopqrstuvwxyz123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<,>./?\"\';:\\|]}[{=+-_)(*&^%$#@!\`~"
+function generatePassword(chars) {
   var ans = "";
   for ( var i = 0; i < 25; i++) {
     ans = ans + chars[randomNum(chars.length - 1)]
