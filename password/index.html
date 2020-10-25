@@ -2,23 +2,35 @@
 <script src="js.js" > </script>
 <div>
 <h1>Some random passwords for you</h1>
-<p>These are generated locally on your machine via client side JS</p>
-<p>To regenerate just refesh the page</p><br>
+<p>These are generated locally on your machine via client side JS</p><br>
 <div>
-	<p>Alphanumeric with common symbols</p>
-	<input onclick="this.focus();this.select()" id="box0_0" readonly="readonly" style="resize: none; width: 25em;"></input><br>
-	<input onclick="this.focus();this.select()" id="box0_1" readonly="readonly" style="resize: none; width: 25em;"></input><br>
-	<input onclick="this.focus();this.select()" id="box0_2" readonly="readonly" style="resize: none; width: 25em;"></input><br>
-	<input onclick="this.focus();this.select()" id="box0_3" readonly="readonly" style="resize: none; width: 25em;"></input><br>
-	<input onclick="this.focus();this.select()" id="box0_4" readonly="readonly" style="resize: none; width: 25em;"></input>
+	<p>Custom</p>
+	<label for="type">Choose a type:</label>
+	<select id="type">
+  	<option value="ans" selected="selected">Alphanumeric with common symbols</option>
+  	<option value="an">Alphanumeric</option>
+	</select><br>
+
+	<label for="length">Quantity (between 1 and 128):</label>
+	<input type="number" id="length" name="length" min="1" max="128" value="25"><br>
+
+	<input onclick="this.focus();this.select()" id="box0_0" readonly="readonly" style="resize: none; width: 25em; max-width: 100%;"></input><br>
+	<button type="button" onClick="onClick()">Generate</button>
 </div>
 <div>
-	<p>Alphanumeric</p>
+	<p>Alphanumeric with common symbols</p>
 	<input onclick="this.focus();this.select()" id="box1_0" readonly="readonly" style="resize: none; width: 25em;"></input><br>
 	<input onclick="this.focus();this.select()" id="box1_1" readonly="readonly" style="resize: none; width: 25em;"></input><br>
 	<input onclick="this.focus();this.select()" id="box1_2" readonly="readonly" style="resize: none; width: 25em;"></input><br>
 	<input onclick="this.focus();this.select()" id="box1_3" readonly="readonly" style="resize: none; width: 25em;"></input><br>
 	<input onclick="this.focus();this.select()" id="box1_4" readonly="readonly" style="resize: none; width: 25em;"></input>
 </div>
+<div>
+	<p>Alphanumeric</p>
+	<input onclick="this.focus();this.select()" id="box2_0" readonly="readonly" style="resize: none; width: 25em;"></input><br>
+	<input onclick="this.focus();this.select()" id="box2_1" readonly="readonly" style="resize: none; width: 25em;"></input><br>
+	<input onclick="this.focus();this.select()" id="box2_2" readonly="readonly" style="resize: none; width: 25em;"></input><br>
+	<input onclick="this.focus();this.select()" id="box2_3" readonly="readonly" style="resize: none; width: 25em;"></input><br>
+	<input onclick="this.focus();this.select()" id="box2_4" readonly="readonly" style="resize: none; width: 25em;"></input>
 </div>
 </html>
