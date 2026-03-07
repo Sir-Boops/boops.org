@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Simple HLS Player</title>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<style>
+body {
+    background:#000;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    margin:0;
+}
+video {
+    width:80%;
+    max-width:900px;
+}
+</style>
+</head>
+
+<body>
+
+<video id="video" controls></video>
+
+<script>
+const video = document.getElementById('video');
+const queryString = window.location.search;
+const params = new URLSearchParams(queryString);
+const videoSrc = params.get('url');
+
+if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    // Safari native playback
+    video.src = videoSrc;
+} else if (Hls.isSupported()) {
+    // Other browsers use hls.js
+    const hls = new Hls();
+    hls.loadSource(videoSrc);
+    hls.attachMedia(video);
+}
+
+</script>
+
+</body>
+</html>
