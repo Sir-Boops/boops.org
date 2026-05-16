@@ -3,194 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HLS Video Player with Quality Selection</title>
+    <title>HLS Video Player</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 1000px;
+            max-width: 800px;
             margin: 0 auto;
             padding: 20px;
             background-color: #f5f5f5;
+            text-align: center;
         }
-        .video-container {
+
+        .video-wrapper {
             position: relative;
             background: #000;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            width: 100%;
         }
+
         video {
             width: 100%;
             display: block;
+            outline: none;
         }
+
+        /* Container for controls below the video */
+        .controls-bar {
+            margin-top: 15px;
+            display: inline-block; /* Centers the block inline */
+        }
+
         .quality-selector {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            min-width: 150px;
-        }
-        .quality-selector select {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            padding: 5px 10px;
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-            width: 100%;
-        }
-        .quality-selector select option {
-            background: #333;
-            color: white;
-        }
-        .error {
-            color: #dc3545;
-            background: #f8d7da;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-            display: none;
-        }
-        h1 {
+            background: white;
             color: #333;
-            margin-bottom: 20px;
+            padding: 10px 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
-        .info {
-            margin-top: 20px;
-            padding: 15px;
-            background: #e9ecef;
-            border-radius: 5px;
+
+        .quality-selector label {
+            font-weight: bold;
             font-size: 14px;
+        }
+
+        .quality-selector select {
+            padding: 5px 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .status-text {
+            margin-top: 20px;
+            color: #666;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
+
     <h1>HLS Video Player</h1>
 
-    <div class="video-container">
-        <video id="video" controls crossorigin="anonymous"></video>
+    <!-- Video Section -->
+    <div class="video-wrapper">
+        <video id="video" controls crossorigin="anonymous" playsinline></video>
+    </div>
+
+    <!-- Controls Section (Below Video) -->
+    <div class="controls-bar">
         <div class="quality-selector" id="qualityContainer" style="display: none;">
-            <label for="qualitySelect" style="font-size: 12px; margin-bottom: 5px; display: block;">Quality:</label>
+            <label for="qualitySelect">Quality:</label>
             <select id="qualitySelect"></select>
         </div>
     </div>
 
-    <div class="error" id="error"></div>
-    <div class="info">
-        <p><strong>Features:</strong> Volume control, seeking, and manual quality selection supported on all browsers.</p>
-        <p><strong>Current Quality:</strong> <span id="currentQuality">Loading...</span></p>
+    <div class="status-text">
+        <span id="status">Loading...</span>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>
         const video = document.getElementById('video');
-        const qualitySelect = document.getElementById('qualitySelect');
         const qualityContainer = document.getElementById('qualityContainer');
-        const errorDiv = document.getElementById('error');
-        const currentQualitySpan = document.getElementById('currentQuality');
+        const qualitySelect = document.getElementById('qualitySelect');
+        const status = document.getElementById('status');
 
         // Replace with your HLS stream URL
         const videoSrc = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
 
         let hls = null;
 
-        function initHls() {
+        function initPlayer() {
             if (Hls.isSupported()) {
-                hls = new Hls({
-                    debug: false,
-                    enableWorker: true,
-                    lowLatencyMode: true,
-                });
-
+                hls = new Hls();
                 hls.loadSource(videoSrc);
                 hls.attachMedia(video);
 
                 hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
-                    populateQualitySelector(data.levels);
+                    setupQualitySelector(data.levels);
                 });
 
                 hls.on(Hls.Events.ERROR, function(event, data) {
                     if (data.fatal) {
-                        show_error(data.details);
+                        status.textContent = 'Error: ' + data.details;
                     }
                 });
 
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                // Safari native HLS support
+                // Safari Native HLS
                 video.src = videoSrc;
+                status.textContent = "Using Native Safari Player";
 
-                // Safari doesn't provide API for quality levels, so we inform the user
-                qualityContainer.style.display = 'block';
+                // Enable basic selector display for Safari (even if just Auto)
+                qualityContainer.style.display = 'inline-flex';
                 qualitySelect.innerHTML = '<option value="auto">Auto (Safari Native)</option>';
                 qualitySelect.disabled = true;
-
-                video.addEventListener('loadedmetadata', function() {
-                    currentQualitySpan.textContent = 'Auto (Safari Native)';
-                });
-            } else {
-                show_error('Your browser does not support HLS playback');
             }
         }
 
-        function populateQualitySelector(levels) {
-            qualityContainer.style.display = 'block';
+        function setupQualitySelector(levels) {
+            qualityContainer.style.display = 'inline-flex';
             qualitySelect.innerHTML = '';
 
-            // Add Auto option
+            // Auto option
             const autoOption = document.createElement('option');
-            autoOption.value = -1;
-            autoOption.text = 'Auto';
+            autoOption.value = '-1';
+            autoOption.textContent = 'Auto';
             qualitySelect.appendChild(autoOption);
 
-            // Add quality levels
-            levels.forEach(function(level, index) {
+            // Levels
+            levels.forEach((level, index) => {
                 const option = document.createElement('option');
                 option.value = index;
-
-                // Format quality label
                 const height = level.height;
                 const bitrate = Math.round(level.bitrate / 1000);
-                option.text = `${height}p (${bitrate} kbps)`;
-
+                option.textContent = `${height}p`;
                 qualitySelect.appendChild(option);
             });
 
-            // Set initial display
-            updateQualityDisplay();
+            // Event Listener for Quality Change
+            qualitySelect.addEventListener('change', function(e) {
+                hls.currentLevel = parseInt(e.target.value);
 
-            // Handle quality selection change
-            qualitySelect.addEventListener('change', function() {
-                hls.currentLevel = parseInt(this.value);
-                updateQualityDisplay();
+                // Update status to reflect choice
+                const selectedText = e.target.options[e.target.selectedIndex].text;
+                status.textContent = `Quality set to: ${selectedText}`;
             });
+
+            status.textContent = "Player Ready";
         }
 
-        function updateQualityDisplay() {
-            if (hls) {
-                if (hls.autoLevelEnabled) {
-                    currentQualitySpan.textContent = 'Auto (Adaptive)';
-                } else {
-                    const level = hls.levels[hls.currentLevel];
-                    if (level) {
-                        const height = level.height;
-                        const bitrate = Math.round(level.bitrate / 1000);
-                        currentQualitySpan.textContent = `${height}p (${bitrate} kbps)`;
-                    }
-                }
-            }
-        }
-
-        function show_error(message) {
-            errorDiv.style.display = 'block';
-            errorDiv.textContent = 'Error: ' + message;
-        }
-
-        // Initialize player
-        initHls();
+        // Initialize
+        initPlayer();
     </script>
 </body>
 </html>
