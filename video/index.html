@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HLS Video Player with Quality Selection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .video-container {
+            position: relative;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        video {
+            width: 100%;
+            display: block;
+        }
+        .quality-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            min-width: 150px;
+        }
+        .quality-selector select {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 5px 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .quality-selector select option {
+            background: #333;
+            color: white;
+        }
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>HLS Video Player</h1>
+
+    <div class="video-container">
+        <video id="video" controls crossorigin="anonymous"></video>
+        <div class="quality-selector" id="qualityContainer" style="display: none;">
+            <label for="qualitySelect" style="font-size: 12px; margin-bottom: 5px; display: block;">Quality:</label>
+            <select id="qualitySelect"></select>
+        </div>
+    </div>
+
+    <div class="error" id="error"></div>
+    <div class="info">
+        <p><strong>Features:</strong> Volume control, seeking, and manual quality selection supported on all browsers.</p>
+        <p><strong>Current Quality:</strong> <span id="currentQuality">Loading...</span></p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+        const video = document.getElementById('video');
+        const qualitySelect = document.getElementById('qualitySelect');
+        const qualityContainer = document.getElementById('qualityContainer');
+        const errorDiv = document.getElementById('error');
+        const currentQualitySpan = document.getElementById('currentQuality');
+
+        // Replace with your HLS stream URL
+        const videoSrc = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
+
+        let hls = null;
+
+        function initHls() {
+            if (Hls.isSupported()) {
+                hls = new Hls({
+                    debug: false,
+                    enableWorker: true,
+                    lowLatencyMode: true,
+                });
+
+                hls.loadSource(videoSrc);
+                hls.attachMedia(video);
+
+                hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
+                    populateQualitySelector(data.levels);
+                });
+
+                hls.on(Hls.Events.ERROR, function(event, data) {
+                    if (data.fatal) {
+                        show_error(data.details);
+                    }
+                });
+
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // Safari native HLS support
+                video.src = videoSrc;
+
+                // Safari doesn't provide API for quality levels, so we inform the user
+                qualityContainer.style.display = 'block';
+                qualitySelect.innerHTML = '<option value="auto">Auto (Safari Native)</option>';
+                qualitySelect.disabled = true;
+
+                video.addEventListener('loadedmetadata', function() {
+                    currentQualitySpan.textContent = 'Auto (Safari Native)';
+                });
+            } else {
+                show_error('Your browser does not support HLS playback');
+            }
+        }
+
+        function populateQualitySelector(levels) {
+            qualityContainer.style.display = 'block';
+            qualitySelect.innerHTML = '';
+
+            // Add Auto option
+            const autoOption = document.createElement('option');
+            autoOption.value = -1;
+            autoOption.text = 'Auto';
+            qualitySelect.appendChild(autoOption);
+
+            // Add quality levels
+            levels.forEach(function(level, index) {
+                const option = document.createElement('option');
+                option.value = index;
+
+                // Format quality label
+                const height = level.height;
+                const bitrate = Math.round(level.bitrate / 1000);
+                option.text = `${height}p (${bitrate} kbps)`;
+
+                qualitySelect.appendChild(option);
+            });
+
+            // Set initial display
+            updateQualityDisplay();
+
+            // Handle quality selection change
+            qualitySelect.addEventListener('change', function() {
+                hls.currentLevel = parseInt(this.value);
+                updateQualityDisplay();
+            });
+        }
+
+        function updateQualityDisplay() {
+            if (hls) {
+                if (hls.autoLevelEnabled) {
+                    currentQualitySpan.textContent = 'Auto (Adaptive)';
+                } else {
+                    const level = hls.levels[hls.currentLevel];
+                    if (level) {
+                        const height = level.height;
+                        const bitrate = Math.round(level.bitrate / 1000);
+                        currentQualitySpan.textContent = `${height}p (${bitrate} kbps)`;
+                    }
+                }
+            }
+        }
+
+        function show_error(message) {
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = 'Error: ' + message;
+        }
+
+        // Initialize player
+        initHls();
+    </script>
+</body>
+</html>
