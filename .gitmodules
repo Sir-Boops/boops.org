@@ -1,4 +1,0 @@
-[submodule "gpx-calc"]
-	path = gpx-calc
-	url = https://github.com/Sir-Boops/gpx-calc.git
-	branch = master
