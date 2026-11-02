@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gas price converter - boops.org</title>
+    <script src="js.js" defer></script>
+</head>
+<body>
+    <h1>Gas price converter</h1>
+    <form id="converter">
+        <label for="price">US dollars per gallon:</label>
+        <input type="number" id="price" name="price" min="0" step="any" value="3.50" required>
+        <br>
+        <button type="submit">Convert</button>
+    </form>
+
+    <p>Canadian dollars per liter: <output id="result" for="price" aria-live="polite">—</output></p>
+    <p id="rate-status" role="status">Loading USD to CAD exchange rate...</p>
+    <noscript>JavaScript is needed to fetch the exchange rate and convert the price.</noscript>
+    <p><a href="../">Home</a></p>
+</body>
+</html>
