@@ -8,6 +8,7 @@
 </head>
 <body>
     <h1>Gas price converter</h1>
+    <h2>US to Canadian</h2>
     <form id="converter">
         <label for="price">US dollars per gallon:</label>
         <input type="number" id="price" name="price" min="0" step="any" value="3.50" required>
@@ -16,6 +17,15 @@
     </form>
 
     <p>Canadian dollars per liter: <output id="result" for="price" aria-live="polite">—</output></p>
+    <hr>
+    <h2>Canadian to US</h2>
+    <form id="reverse-converter">
+        <label for="reverse-price">Canadian dollars per liter:</label>
+        <input type="number" id="reverse-price" name="price" min="0" step="any" value="1.50" required>
+        <br>
+        <button type="submit">Convert</button>
+    </form>
+    <p>US dollars per gallon: <output id="reverse-result" for="reverse-price" aria-live="polite">—</output></p>
     <p id="rate-status" role="status">Loading USD to CAD exchange rate...</p>
     <noscript>JavaScript is needed to fetch the exchange rate and convert the price.</noscript>
     <p><a href="../">Home</a></p>

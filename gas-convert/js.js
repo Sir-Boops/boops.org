@@ -5,6 +5,10 @@ const result = document.getElementById("result");
 const status = document.getElementById("rate-status");
 const form = document.getElementById("converter");
 const refresh = form.querySelector("button");
+const reverseForm = document.getElementById("reverse-converter");
+const reversePrice = document.getElementById("reverse-price");
+const reverseResult = document.getElementById("reverse-result");
+const reverseButton = reverseForm.querySelector("button");
 const litersPerUSGallon = 3.785411784;
 let exchangeRate = null;
 let rateDate = "";
@@ -25,8 +29,22 @@ function convert() {
         : "Price is too large";
 }
 
+function convertReverse() {
+    const amount = reversePrice.valueAsNumber;
+    if (exchangeRate === null || !reversePrice.validity.valid ||
+        !Number.isFinite(amount) || amount < 0) {
+        reverseResult.value = "—";
+        return;
+    }
+    const converted = amount / exchangeRate * litersPerUSGallon;
+    reverseResult.value = Number.isFinite(converted)
+        ? converted.toFixed(3)
+        : "Price is too large";
+}
+
 async function loadRate() {
     refresh.disabled = true;
+    reverseButton.disabled = true;
     status.textContent = "Loading USD to CAD exchange rate...";
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
@@ -46,9 +64,11 @@ async function loadRate() {
         rateDate = data.date;
         status.textContent = "1 USD = " + exchangeRate + " CAD. Rate date: " + rateDate + ".";
         convert();
+        convertReverse();
     } catch (error) {
         if (exchangeRate === null) {
             result.value = "—";
+            reverseResult.value = "—";
             status.textContent = "Could not load the exchange rate. Press Convert to retry.";
         } else {
             status.textContent = "Could not refresh. Still using 1 USD = " + exchangeRate +
@@ -57,6 +77,7 @@ async function loadRate() {
     } finally {
         clearTimeout(timeout);
         refresh.disabled = false;
+        reverseButton.disabled = false;
     }
 }
 
@@ -66,4 +87,10 @@ form.addEventListener("submit", (event) => {
     else convert();
 });
 price.addEventListener("input", convert);
+reverseForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (exchangeRate === null) loadRate();
+    else convertReverse();
+});
+reversePrice.addEventListener("input", convertReverse);
 loadRate();
