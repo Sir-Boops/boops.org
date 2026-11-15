@@ -58,6 +58,13 @@ video {
 
 .empty p { margin: 0; }
 
+.resolution {
+  margin: 12px 0 0;
+  color: #d5cfd1;
+  font-size: .875rem;
+  font-variant-numeric: tabular-nums;
+}
+
 .play-icon {
   display: grid;
   place-items: center;

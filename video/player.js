@@ -3,6 +3,7 @@ const quality = document.querySelector('#quality');
 const toolbar = document.querySelector('#toolbar');
 const status = document.querySelector('#status');
 const empty = document.querySelector('#empty');
+const resolution = document.querySelector('#resolution');
 
 const Hls = window.Hls;
 const nativeHls = video.canPlayType('application/vnd.apple.mpegurl')
@@ -135,7 +136,16 @@ function attachHls(source) {
   hls.attachMedia(video);
 }
 
+function updateResolution() {
+  const { videoWidth, videoHeight } = video;
+  resolution.hidden = !videoWidth || !videoHeight;
+  resolution.textContent = resolution.hidden ? '' : `Current resolution: ${videoWidth} × ${videoHeight}`;
+}
+
+video.addEventListener('resize', updateResolution);
+video.addEventListener('emptied', () => { resolution.hidden = true; });
 video.addEventListener('loadedmetadata', () => {
+  updateResolution();
   report();
   if (!pendingPlayback) return;
   const { time } = pendingPlayback;
@@ -144,6 +154,7 @@ video.addEventListener('loadedmetadata', () => {
 });
 
 video.addEventListener('error', () => {
+  resolution.hidden = true;
   pendingPlayback = undefined;
   report('This video or quality is unavailable on this device.');
 });
