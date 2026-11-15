@@ -75,27 +75,38 @@ async function discoverVariants(source) {
   return [];
 }
 
-function attachNative(source, levels = []) {
-  video.disableRemotePlayback = false;
+function getPlaybackState() {
+  return { time: video.currentTime, playing: !video.paused && !video.ended };
+}
+
+function setNativeSource(source, playback) {
+  pendingPlayback = playback;
   video.src = source;
+  if (playback?.playing) video.play().catch(() => {});
+}
+
+async function attachNativeHls(source, playback) {
+  video.disableRemotePlayback = false;
+  toolbar.hidden = true;
+  report();
+  setNativeSource(source, playback);
+
+  const levels = await discoverVariants(source);
+  // Native playback needs the master playlist to retain linked tracks.
+  if (levels.some(level => level.linkedTracks)) return;
+
   populateQualities(levels, selected => {
     const nextSource = selected === 'auto' ? source : levels[Number(selected)].url;
     if (nextSource === video.src) return;
-
-    const playback = pendingPlayback ?? {
-      time: video.currentTime,
-      playing: !video.paused && !video.ended,
-    };
-    pendingPlayback = playback;
-    video.src = nextSource;
-    if (playback.playing) video.play().catch(() => {});
+    setNativeSource(nextSource, pendingPlayback ?? getPlaybackState());
   });
 }
 
 function attachHls(source) {
   // Managed Media Source needs remote playback disabled when there is no AirPlay source.
   video.disableRemotePlayback = true;
-  const hls = new Hls();
+  const hls = new Hls({ enableWorker: true, lowLatencyMode: true, backBufferLength: 90 });
+  let attemptedMediaRecovery = false;
   hls.on(Hls.Events.MANIFEST_PARSED, (_event, data) => {
     populateQualities(data.levels.map((level, id) => ({
       id,
@@ -107,9 +118,16 @@ function attachHls(source) {
   });
   hls.on(Hls.Events.ERROR, (_event, error) => {
     if (!error.fatal) return;
+    if (error.type === Hls.ErrorTypes.MEDIA_ERROR && video.error && !attemptedMediaRecovery) {
+      attemptedMediaRecovery = true;
+      hls.recoverMediaError();
+      return;
+    }
+
+    const playback = getPlaybackState();
     hls.destroy();
     if (nativeHls) {
-      attachNative(source);
+      attachNativeHls(source, playback);
     } else {
       toolbar.hidden = true;
       report('This stream could not be played. Check the video URL and try again.');
@@ -132,7 +150,7 @@ video.addEventListener('error', () => {
   report('This video or quality is unavailable on this device.');
 });
 
-async function start() {
+function start() {
   const rawSource = new URLSearchParams(location.search).get('src');
   if (!rawSource) {
     empty.hidden = false;
@@ -151,25 +169,11 @@ async function start() {
 
   video.hidden = false;
   if (/\.(mp4|m4v|mov|webm|ogg|ogv)$/i.test(source.pathname)) {
-    attachNative(source.href);
-    return;
-  }
-
-  if (nativeHls) {
-    const levels = await discoverVariants(source.href);
-    if (!levels.some(level => level.linkedTracks)) {
-      attachNative(source.href, levels);
-      return;
-    }
-    // Let hls.js retain linked audio and caption tracks when switching variants.
-    if (!supportsHlsJs) {
-      attachNative(source.href);
-      return;
-    }
-  }
-
-  if (supportsHlsJs) {
+    video.src = source.href;
+  } else if (supportsHlsJs) {
     attachHls(source.href);
+  } else if (nativeHls) {
+    attachNativeHls(source.href);
   } else {
     report('This browser cannot play this HLS stream.');
   }
