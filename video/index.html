@@ -1,168 +1,30 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HLS Video Player</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            width: 75%;
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-            text-align: center;
-        }
-
-        .video-wrapper {
-            position: relative;
-            background: #000;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            width: 100%;
-        }
-
-        video {
-            width: 100%;
-            display: block;
-            outline: none;
-        }
-
-        /* Container for controls below the video */
-        .controls-bar {
-            margin-top: 15px;
-            display: inline-block; /* Centers the block inline */
-        }
-
-        .quality-selector {
-            background: white;
-            color: #333;
-            padding: 10px 20px;
-            border-radius: 6px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .quality-selector label {
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .quality-selector select {
-            padding: 5px 10px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background: #fff;
-            cursor: pointer;
-        }
-
-        .status-text {
-            margin-top: 20px;
-            color: #666;
-            font-size: 0.9rem;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Video Player</title>
+  <meta name="description" content="Play a video from a URL and choose its streaming quality.">
+  <link rel="stylesheet" href="./player.css">
+  <script src="./hls.min.js" defer></script>
+  <script src="./player.js" defer></script>
 </head>
 <body>
-
-    <h1>HLS Video Player</h1>
-
-    <!-- Video Section -->
-    <div class="video-wrapper">
-        <video id="video" controls crossorigin="anonymous" playsinline></video>
+  <main class="player">
+    <h1>Video player</h1>
+    <div class="screen">
+      <video id="video" aria-label="Video" controls playsinline preload="metadata" hidden></video>
+      <div class="empty" id="empty" hidden>
+        <span class="play-icon" aria-hidden="true"></span>
+        <p>Open this page with a video URL in <code>?src=</code>.</p>
+      </div>
     </div>
-
-    <!-- Controls Section (Below Video) -->
-    <div class="controls-bar">
-        <div class="quality-selector" id="qualityContainer" style="display: none;">
-            <label for="qualitySelect">Quality:</label>
-            <select id="qualitySelect"></select>
-        </div>
+    <div class="toolbar" id="toolbar" hidden>
+      <label for="quality">Quality</label>
+      <select id="quality"><option value="auto">Auto</option></select>
     </div>
-
-    <div class="status-text">
-        <span id="status">Loading...</span>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script>
-        const video = document.getElementById('video');
-        const qualityContainer = document.getElementById('qualityContainer');
-        const qualitySelect = document.getElementById('qualitySelect');
-        const status = document.getElementById('status');
-
-        // Replace with your HLS stream URL
-        const videoSrc = 'https://v.boops.org/file/boops-videos/hls-8/stream.m3u8';
-
-        let hls = null;
-
-        function initPlayer() {
-            if (Hls.isSupported()) {
-                hls = new Hls();
-                hls.loadSource(videoSrc);
-                hls.attachMedia(video);
-
-                hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
-                    setupQualitySelector(data.levels);
-                });
-
-                hls.on(Hls.Events.ERROR, function(event, data) {
-                    if (data.fatal) {
-                        status.textContent = 'Error: ' + data.details;
-                    }
-                });
-
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                // Safari Native HLS
-                video.src = videoSrc;
-                status.textContent = "Using Native Safari Player";
-
-                // Enable basic selector display for Safari (even if just Auto)
-                qualityContainer.style.display = 'inline-flex';
-                qualitySelect.innerHTML = '<option value="auto">Auto (Safari Native)</option>';
-                qualitySelect.disabled = true;
-            }
-        }
-
-        function setupQualitySelector(levels) {
-            qualityContainer.style.display = 'inline-flex';
-            qualitySelect.innerHTML = '';
-
-            // Auto option
-            const autoOption = document.createElement('option');
-            autoOption.value = '-1';
-            autoOption.textContent = 'Auto';
-            qualitySelect.appendChild(autoOption);
-
-            // Levels
-            levels.forEach((level, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                const height = level.height;
-                const bitrate = Math.round(level.bitrate / 1000);
-                option.textContent = `${height}p`;
-                qualitySelect.appendChild(option);
-            });
-
-            // Event Listener for Quality Change
-            qualitySelect.addEventListener('change', function(e) {
-                hls.currentLevel = parseInt(e.target.value);
-
-                // Update status to reflect choice
-                const selectedText = e.target.options[e.target.selectedIndex].text;
-                status.textContent = `Quality set to: ${selectedText}`;
-            });
-
-            status.textContent = "Player Ready";
-        }
-
-        // Initialize
-        initPlayer();
-    </script>
+    <p class="status" id="status" role="status" hidden></p>
+    <noscript><p>Turn on JavaScript to load a video from the URL.</p></noscript>
+  </main>
 </body>
 </html>
