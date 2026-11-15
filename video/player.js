@@ -103,8 +103,6 @@ async function attachNativeHls(source, playback) {
 }
 
 function attachHls(source) {
-  // Managed Media Source needs remote playback disabled when there is no AirPlay source.
-  video.disableRemotePlayback = true;
   const hls = new Hls({ enableWorker: true, lowLatencyMode: true, backBufferLength: 90 });
   let attemptedMediaRecovery = false;
   hls.on(Hls.Events.MANIFEST_PARSED, (_event, data) => {

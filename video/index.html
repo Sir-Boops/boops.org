@@ -6,14 +6,14 @@
   <title>Video Player</title>
   <meta name="description" content="Play a video from a URL and choose its streaming quality.">
   <link rel="stylesheet" href="./player.css">
-  <script src="./hls.min.js" defer></script>
+  <script src="./hls.min.js?v=1.7.4" defer></script>
   <script src="./player.js" defer></script>
 </head>
 <body>
   <main class="player">
     <h1>Video player</h1>
     <div class="screen">
-      <video id="video" aria-label="Video" controls playsinline preload="metadata" hidden></video>
+      <video id="video" aria-label="Video" controls playsinline preload="auto" hidden></video>
       <div class="empty" id="empty" hidden>
         <span class="play-icon" aria-hidden="true"></span>
         <p>Open this page with a video URL in <code>?src=</code>.</p>
