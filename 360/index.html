@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <title>360° Video Player</title>
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -36,6 +37,16 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, .32);
       backdrop-filter: blur(14px);
       font-size: .875rem;
+      transition: opacity .18s ease;
+    }
+
+    #controls.controls-hidden:not(:has(:focus-visible, :active)) {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #controls { transition: none; }
     }
 
     .timeline {
@@ -233,11 +244,82 @@
       border-radius: 12px;
       background: var(--panel);
     }
+
+    /* A-Frame supplies the permission dialog and handles the browser request. */
+    a-scene .a-modal {
+      display: grid;
+      place-items: center;
+      place-items: safe center;
+      overflow: auto;
+      padding: 16px;
+      background: rgba(0, 0, 0, .76);
+    }
+
+    a-scene .a-modal .a-dialog {
+      inset: auto;
+      transform: none;
+      width: min(100%, 380px);
+      height: auto;
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #191719;
+      color: #f6f3ef;
+      font: 1rem/1.5 Inter, system-ui, sans-serif;
+    }
+
+    a-scene .a-modal .a-dialog-text-container { height: auto; }
+    a-scene .a-modal .a-dialog-text { margin: 0; font: inherit; }
+
+    a-scene .a-modal .a-dialog-buttons-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      height: auto;
+      margin-top: 16px;
+    }
+
+    a-scene .a-modal .a-dialog-button {
+      flex: 1 0 auto;
+      width: auto;
+      height: auto;
+      min-height: 44px;
+      margin: 0;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: #302d30;
+      color: #f6f3ef;
+      opacity: 1;
+      font: 650 1rem/1.25 Inter, system-ui, sans-serif;
+    }
+
+    a-scene .a-modal .a-dialog-allow-button { background: var(--accent); color: #211815; }
+    a-scene .a-modal .a-dialog-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    #fullscreenHelp {
+      width: min(calc(100% - 32px), 380px);
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #191719;
+      color: inherit;
+      font: inherit;
+    }
+
+    #fullscreenHelp::backdrop { background: rgba(0, 0, 0, .76); }
+    #fullscreenHelp h2 { margin: 0; font-size: 1.125rem; }
+    #fullscreenHelp p { margin: 8px 0 16px; line-height: 1.5; }
+    #fullscreenHelp a { display: inline-block; margin-bottom: 12px; color: var(--accent); }
+    #fullscreenHelp form { display: flex; justify-content: flex-end; }
+    #fullscreenHelp .control { padding-inline: 16px; background: var(--accent); color: #211815; }
+    #fullscreenHelp :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   </style>
 </head>
 <body>
   <video id="video" crossorigin="anonymous" playsinline preload="metadata" hidden></video>
-  <a-scene background="color: #080809" xr-mode-ui="enterVRButton: #enterVR">
+  <a-scene background="color: #080809" xr-mode-ui="enterVRButton: #enterVR"
+    device-orientation-permission-ui="deviceMotionMessage: Allow motion access to look around by moving your phone. You can also drag to look around.; denyButtonText: Not now">
     <a-entity camera look-controls="reverseMouseDrag: true" position="0 1.6 0"></a-entity>
     <a-videosphere id="videosphere" rotation="0 -90 0" radius="500" visible="false"></a-videosphere>
   </a-scene>
@@ -270,10 +352,18 @@
     </div>
   </div>
 
+  <dialog id="fullscreenHelp" aria-labelledby="fullscreenHelpTitle" aria-describedby="fullscreenHelpText">
+    <h2 id="fullscreenHelpTitle">Fullscreen</h2>
+    <p id="fullscreenHelpText"></p>
+    <a id="openViewer" target="_blank" rel="noopener" hidden>Open viewer in a new tab</a>
+    <form method="dialog"><button class="control" type="submit" autofocus>Done</button></form>
+  </dialog>
+
   <script>
     const video = document.getElementById('video');
     const scene = document.querySelector('a-scene');
     const videosphere = document.getElementById('videosphere');
+    const controls = document.getElementById('controls');
     const status = document.getElementById('status');
     const playPause = document.getElementById('playPause');
     const playLabel = document.getElementById('playLabel');
@@ -286,9 +376,39 @@
     const resolutionValue = document.getElementById('resolutionValue');
     const enterVR = document.getElementById('enterVR');
     const fullscreen = document.getElementById('fullscreen');
+    const fullscreenHelp = document.getElementById('fullscreenHelp');
+    const fullscreenHelpText = document.getElementById('fullscreenHelpText');
+    const openViewer = document.getElementById('openViewer');
     let streamIsLive = false;
     let mediaFailed = false;
     let lastVolume = video.volume || 1;
+    let hideControlsTimer;
+
+    function showControls() {
+      clearTimeout(hideControlsTimer);
+      controls.classList.remove('controls-hidden');
+      if (!video.paused && !video.ended && !mediaFailed) {
+        hideControlsTimer = setTimeout(() => controls.classList.add('controls-hidden'), 3000);
+      }
+    }
+
+    for (const event of ['playing', 'pause', 'ended']) video.addEventListener(event, showControls);
+    for (const event of ['pointerdown', 'input', 'focusin']) controls.addEventListener(event, showControls);
+
+    let canvasTap;
+    scene.addEventListener('pointerdown', event => {
+      canvasTap = event.target === scene.canvas && event.isPrimary && event.button === 0 ? event : null;
+    });
+    scene.addEventListener('pointermove', event => {
+      if (canvasTap?.pointerId === event.pointerId &&
+          Math.hypot(event.clientX - canvasTap.clientX, event.clientY - canvasTap.clientY) > 10) canvasTap = null;
+    });
+    scene.addEventListener('pointercancel', () => { canvasTap = null; });
+    scene.addEventListener('pointerup', event => {
+      if (canvasTap?.pointerId !== event.pointerId) return;
+      canvasTap = null;
+      if (event.target === scene.canvas) showControls();
+    });
 
     function labelButton(button, label) {
       button.setAttribute('aria-label', label);
@@ -297,6 +417,7 @@
 
     function showMediaError(message) {
       mediaFailed = true;
+      showControls();
       playPause.disabled = seek.disabled = mute.disabled = volume.disabled = true;
       resolution.hidden = true;
       status.textContent = message;
@@ -415,26 +536,50 @@
     });
 
     const root = document.documentElement;
-    const requestFullscreen = root.requestFullscreen || root.webkitRequestFullscreen;
-    const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+    const standardFullscreen = root.requestFullscreen && document.exitFullscreen && document.fullscreenEnabled !== false;
+    const webkitFullscreen = root.webkitRequestFullscreen && document.webkitExitFullscreen && document.webkitFullscreenEnabled !== false;
+    const requestFullscreen = standardFullscreen ? root.requestFullscreen : (webkitFullscreen ? root.webkitRequestFullscreen : null);
+    const exitFullscreen = standardFullscreen ? document.exitFullscreen : (webkitFullscreen ? document.webkitExitFullscreen : null);
     const fullscreenElement = () => document.fullscreenElement || document.webkitFullscreenElement;
-    fullscreen.hidden = !requestFullscreen || !exitFullscreen ||
-      (document.fullscreenEnabled ?? document.webkitFullscreenEnabled) === false;
+    const embeddedViewer = window.self !== window.top;
+    const appleMobile = typeof navigator.standalone === 'boolean' || /iPhone|iPad|iPod/.test(navigator.userAgent);
+    const standalone = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches ||
+      matchMedia('(display-mode: fullscreen)').matches;
+    fullscreen.hidden = !requestFullscreen && standalone;
+
+    function showFullscreenHelp() {
+      const message = embeddedViewer ? 'Open the viewer in a new tab to use fullscreen.' : appleMobile ?
+        'To watch without browser toolbars, open this page in Safari. In the Share menu, choose Add to Home Screen. Turn on Open as Web App if offered, then launch the viewer from your Home Screen.' :
+        'Fullscreen is unavailable in this browser window.';
+      if (typeof fullscreenHelp.showModal !== 'function') {
+        if (!mediaFailed) status.textContent = message;
+        return;
+      }
+      fullscreenHelpText.textContent = message;
+      openViewer.hidden = !embeddedViewer;
+      if (embeddedViewer) openViewer.href = window.location.href;
+      if (!fullscreenHelp.open) fullscreenHelp.showModal();
+    }
 
     function syncFullscreen() {
       const active = Boolean(fullscreenElement());
       fullscreen.classList.toggle('is-fullscreen', active);
-      labelButton(fullscreen, active ? 'Exit fullscreen' : 'Enter fullscreen');
+      labelButton(fullscreen, active ? 'Exit fullscreen' : (requestFullscreen ? 'Enter fullscreen' : 'Fullscreen options'));
     }
 
+    syncFullscreen();
     document.addEventListener('fullscreenchange', syncFullscreen);
     document.addEventListener('webkitfullscreenchange', syncFullscreen);
+    fullscreenHelp.addEventListener('close', showControls);
     fullscreen.addEventListener('click', async () => {
+      const active = Boolean(fullscreenElement());
       try {
-        if (fullscreenElement()) await exitFullscreen.call(document);
-        else await requestFullscreen.call(root);
+        if (active) await exitFullscreen?.call(document);
+        else if (requestFullscreen) await requestFullscreen.call(root);
+        else showFullscreenHelp();
       } catch {
-        if (!mediaFailed) status.textContent = 'Fullscreen is unavailable.';
+        if (!active) showFullscreenHelp();
+        else if (!mediaFailed) status.textContent = 'Couldn’t exit fullscreen.';
       }
     });
 
