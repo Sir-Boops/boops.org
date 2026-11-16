@@ -1,153 +1,440 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>360 Video Player - Full Controls</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>360° Video Player</title>
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
-    body { margin: 0; overflow: hidden; background: #000; }
+    :root {
+      color-scheme: dark;
+      font-family: Inter, system-ui, sans-serif;
+      background: #080809;
+      color: #f6f3ef;
+      --panel: rgba(25, 23, 25, .94);
+      --border: rgba(246, 243, 239, .18);
+      --accent: #ffb6a3;
+      --muted: #d5cfd1;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; overflow: hidden; }
+    [hidden] { display: none !important; }
+
     #controls {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-wrap: wrap;          /* allow wrapping on small screens */
-      gap: 8px;
-      background: rgba(0,0,0,0.6);
-      padding: 8px 10px;
-      border-radius: 8px;
-      color: #fff;
-      font-family: sans-serif;
+      position: fixed;
+      z-index: 10;
+      inset-inline: max(12px, env(safe-area-inset-left)) max(12px, env(safe-area-inset-right));
+      bottom: max(16px, env(safe-area-inset-bottom));
+      max-width: 680px;
+      margin-inline: auto;
+      padding: 3px clamp(10px, 2vw, 16px) 10px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--panel);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .32);
+      backdrop-filter: blur(14px);
+      font-size: .875rem;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
       align-items: center;
-      max-width: 90%;           /* never overflow the viewport */
-      box-sizing: border-box;
+      gap: 10px;
+      font-variant-numeric: tabular-nums;
     }
 
-    #seek {
-      flex: 1 1 150px;           /* grows and shrinks, min width 150px */
-      min-width: 100px;          /* don’t shrink too much */
-      max-width: 100%;
+    .timestamp { min-width: 4ch; }
+    #duration { color: var(--muted); text-align: right; }
+    #duration.live { color: var(--accent); font-weight: 650; }
+
+    .actions, .audio, .view {
+      display: flex;
+      align-items: center;
     }
 
-    /* Optional: reduce gaps and font size on very small screens */
-    @media (max-width: 400px) {
-      #controls {
-        gap: 5px;
-        padding: 5px 8px;
-        font-size: 14px;
-      }
-      #seek {
-        min-width: 80px;
-      }
-    }
-    button {
-      background: none;
-      border: none;
-      color: #fff;
+    .actions { justify-content: space-between; gap: 6px; }
+    .audio { gap: 4px; }
+    .view { gap: 8px; margin-left: auto; }
+
+    .control {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      background: transparent;
+      color: inherit;
+      font: inherit;
       cursor: pointer;
-      font-size: 16px;
+      -webkit-tap-highlight-color: transparent;
     }
-    input[type="range"] {
+
+    #playPause {
+      min-width: 94px;
+      padding-inline: 10px;
+      border-color: var(--border);
+      background: #302422;
+      color: var(--accent);
+      font-weight: 650;
+    }
+
+    @media (hover: hover) {
+      .control:hover:not(:disabled) { background: #343034; }
+      #playPause:hover:not(:disabled) { background: #45302b; }
+    }
+
+    .control:active:not(:disabled) { background: #343034; }
+    #playPause:active:not(:disabled) { background: #45302b; }
+    .control:disabled { opacity: .45; cursor: default; }
+    #controls :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    .icon {
+      display: inline-grid;
+      place-items: center;
+      position: relative;
+      width: 18px;
+      height: 18px;
+      flex: none;
+    }
+
+    .play-icon::before {
+      content: '';
+      width: 12px;
+      height: 14px;
+      background: currentColor;
+      clip-path: polygon(0 0, 100% 50%, 0 100%);
+    }
+
+    .is-playing .play-icon::before {
+      background: linear-gradient(to right, currentColor 4px, transparent 4px 8px, currentColor 8px);
+      clip-path: none;
+    }
+
+    .volume-icon::before {
+      content: '';
+      position: absolute;
+      inset: 2px auto 2px 0;
+      width: 10px;
+      background: currentColor;
+      clip-path: polygon(0 30%, 40% 30%, 100% 0, 100% 100%, 40% 70%, 0 70%);
+    }
+
+    .volume-icon::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      width: 12px;
+      height: 14px;
+      border: 2px solid transparent;
+      border-right-color: currentColor;
+      border-radius: 50%;
+    }
+
+    .is-muted .volume-icon::after {
+      content: '×';
+      width: auto;
+      height: auto;
+      border: 0;
+      font: 650 13px/1 system-ui, sans-serif;
+    }
+
+    .fullscreen-icon span {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border: solid currentColor;
+      border-width: 2px 0 0 2px;
+      transform: rotate(calc(var(--corner) + var(--turn, 0deg)));
+    }
+
+    .fullscreen-icon span:nth-child(1) { top: 1px; left: 1px; --corner: 0deg; }
+    .fullscreen-icon span:nth-child(2) { top: 1px; right: 1px; --corner: 90deg; }
+    .fullscreen-icon span:nth-child(3) { bottom: 1px; right: 1px; --corner: 180deg; }
+    .fullscreen-icon span:nth-child(4) { bottom: 1px; left: 1px; --corner: 270deg; }
+    .is-fullscreen .fullscreen-icon { --turn: 180deg; }
+
+    .range {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      height: 44px;
+      margin: 0;
+      padding: 0;
+      accent-color: var(--accent);
       cursor: pointer;
+    }
+
+    .range:disabled { opacity: .45; cursor: default; }
+    #volume { width: clamp(62px, 15vw, 100px); }
+    .look-hint { margin: 0 4px 0 0; color: var(--muted); white-space: nowrap; }
+
+    @media (max-width: 490px) {
+      .look-hint { display: none; }
+    }
+
+    @media (max-width: 350px) {
+      #playPause { min-width: 90px; padding-inline: 8px; }
+      #volume { width: 44px; }
+      .actions { gap: 3px; }
+      .audio { gap: 2px; }
+      .view { gap: 0; }
+    }
+
+    #status {
+      position: fixed;
+      z-index: 10;
+      inset: 50% auto auto 50%;
+      transform: translate(-50%, -50%);
+      width: max-content;
+      max-width: calc(100% - 32px);
+      margin: 0;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    #status:not(:empty) {
+      padding: 14px 18px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel);
     }
   </style>
 </head>
 <body>
-  <video id="video" crossorigin="anonymous" playsinline style="display:none"></video>
-  <!-- A-Frame Scene -->
-  <a-scene>
+  <video id="video" crossorigin="anonymous" playsinline preload="metadata" hidden></video>
+  <a-scene background="color: #080809" xr-mode-ui="enterVRButton: #enterVR">
     <a-entity camera look-controls position="0 1.6 0"></a-entity>
-    <a-videosphere id="videosphere" rotation="0 -90 0" radius="500"></a-videosphere>
+    <a-videosphere id="videosphere" rotation="0 -90 0" radius="500" visible="false"></a-videosphere>
   </a-scene>
 
-  <!-- Full Control Bar -->
-  <div id="controls">
-    <button id="playPause">▶️</button>
-    <input type="range" id="seek" min="0" max="100" value="0">
-    <span id="time">0:00 / 0:00</span>
-    <button id="mute">🔊</button>
-    <input type="range" id="volume" min="0" max="1" step="0.05" value="1">
-    <button id="fullscreen">⛶</button>
+  <p id="status" role="status"></p>
+  <div id="controls" role="group" aria-label="Video controls">
+    <div class="timeline">
+      <span class="timestamp" id="currentTime">0:00</span>
+      <input class="range" id="seek" type="range" min="0" max="1000" value="0" aria-label="Seek" disabled>
+      <span class="timestamp" id="duration">—</span>
+    </div>
+    <div class="actions">
+      <button class="control" id="playPause" type="button" disabled>
+        <span class="icon play-icon" aria-hidden="true"></span><span id="playLabel">Play</span>
+      </button>
+      <div class="audio" role="group" aria-label="Audio">
+        <button class="control" id="mute" type="button" aria-label="Mute" title="Mute" disabled>
+          <span class="icon volume-icon" aria-hidden="true"></span>
+        </button>
+        <input class="range" id="volume" type="range" min="0" max="100" value="100" aria-label="Volume" disabled>
+      </div>
+      <div class="view">
+        <p class="look-hint">Drag to look around</p>
+        <button class="control" id="enterVR" type="button" aria-label="Enter VR" title="Enter VR" hidden>VR</button>
+        <button class="control" id="fullscreen" type="button" aria-label="Enter fullscreen" title="Enter fullscreen" hidden>
+          <span class="icon fullscreen-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <script>
     const video = document.getElementById('video');
+    const scene = document.querySelector('a-scene');
+    const videosphere = document.getElementById('videosphere');
+    const status = document.getElementById('status');
+    const playPause = document.getElementById('playPause');
+    const playLabel = document.getElementById('playLabel');
+    const seek = document.getElementById('seek');
+    const currentTime = document.getElementById('currentTime');
+    const duration = document.getElementById('duration');
+    const mute = document.getElementById('mute');
+    const volume = document.getElementById('volume');
+    const enterVR = document.getElementById('enterVR');
+    const fullscreen = document.getElementById('fullscreen');
+    let streamIsLive = false;
+    let mediaFailed = false;
+    let lastVolume = video.volume || 1;
 
-    const queryString = window.location.search;
-    const params = new URLSearchParams(queryString);
-    
-    const hls = new Hls();
-    const videoSrc = params.get('url'); // replace with your HLS URL
-
-    if (Hls.isSupported()) {
-      hls.loadSource(videoSrc);
-      hls.attachMedia(video);
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = videoSrc;
+    function labelButton(button, label) {
+      button.setAttribute('aria-label', label);
+      button.title = label;
     }
 
-    document.querySelector('#videosphere').setAttribute('src', '#video');
+    function showMediaError(message) {
+      mediaFailed = true;
+      playPause.disabled = seek.disabled = mute.disabled = volume.disabled = true;
+      status.textContent = message;
+    }
 
-    // Controls
-    const playPauseBtn = document.getElementById('playPause');
-    const seekSlider = document.getElementById('seek');
-    const timeDisplay = document.getElementById('time');
-    const muteBtn = document.getElementById('mute');
-    const volumeSlider = document.getElementById('volume');
-    const fullscreenBtn = document.getElementById('fullscreen');
+    function formatTime(seconds) {
+      const total = Math.floor(Math.max(0, seconds));
+      const hours = Math.floor(total / 3600);
+      const minutes = Math.floor(total / 60) % 60;
+      const remainder = String(total % 60).padStart(2, '0');
+      return hours ? `${hours}:${String(minutes).padStart(2, '0')}:${remainder}` : `${minutes}:${remainder}`;
+    }
 
-    // Play / Pause
-    playPauseBtn.addEventListener('click', () => {
-      if (video.paused) {
-        video.play();
-        playPauseBtn.textContent = '⏸️';
-      } else {
+    function seekWindow() {
+      if (streamIsLive || video.duration === Infinity) {
+        const lastRange = video.seekable.length - 1;
+        return lastRange < 0 ? [0, 0] : [video.seekable.start(lastRange), video.seekable.end(lastRange)];
+      }
+      return [0, Number.isFinite(video.duration) ? video.duration : 0];
+    }
+
+    function syncTimeline() {
+      const live = streamIsLive || video.duration === Infinity;
+      const [start, end] = seekWindow();
+      const position = Math.min(end, Math.max(start, video.currentTime));
+      const behind = formatTime(end - position);
+      const elapsed = formatTime(video.currentTime);
+      seek.disabled = mediaFailed || end <= start;
+      seek.value = end > start ? (position - start) / (end - start) * seek.max : 0;
+      seek.setAttribute('aria-valuetext', live ? `${behind} behind live` : `${elapsed} of ${formatTime(end)}`);
+      currentTime.textContent = live ? (end - position >= 1 ? `−${behind}` : '0:00') : elapsed;
+      duration.textContent = live ? 'Live' : (end > 0 ? formatTime(end) : '—');
+      duration.classList.toggle('live', live);
+    }
+
+    for (const event of ['loadedmetadata', 'durationchange', 'timeupdate', 'progress', 'emptied']) {
+      video.addEventListener(event, syncTimeline);
+    }
+
+    seek.addEventListener('input', () => {
+      const [start, end] = seekWindow();
+      if (end > start) video.currentTime = start + (end - start) * (seek.value / seek.max);
+      syncTimeline();
+    });
+
+    function syncPlayback() {
+      const playing = !video.paused && !video.ended;
+      playPause.classList.toggle('is-playing', playing);
+      playLabel.textContent = playing ? 'Pause' : (video.ended ? 'Replay' : 'Play');
+    }
+
+    for (const event of ['play', 'pause', 'ended']) {
+      video.addEventListener(event, syncPlayback);
+    }
+
+    playPause.addEventListener('click', async () => {
+      if (!video.paused && !video.ended) {
         video.pause();
-        playPauseBtn.textContent = '▶️';
+        return;
+      }
+      try {
+        await video.play();
+      } catch (error) {
+        syncPlayback();
+        if (!mediaFailed && error.name !== 'AbortError') {
+          status.textContent = 'Playback couldn’t start. Select Play to try again.';
+        }
       }
     });
 
-    // Seek
-    video.addEventListener('timeupdate', () => {
-      const percent = (video.currentTime / video.duration) * 100;
-      seekSlider.value = percent || 0;
+    function syncVolume() {
+      if (video.volume > 0) lastVolume = video.volume;
+      const silent = video.muted || video.volume === 0;
+      mute.classList.toggle('is-muted', silent);
+      labelButton(mute, silent ? 'Unmute' : 'Mute');
+      volume.value = video.muted ? 0 : Math.round(video.volume * 100);
+    }
 
-      const formatTime = t => `${Math.floor(t / 60)}:${Math.floor(t % 60).toString().padStart(2,'0')}`;
-      timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
+    const initialVolume = video.volume;
+    video.volume = initialVolume === 1 ? .5 : 1;
+    volume.hidden = video.volume === initialVolume;
+    video.volume = initialVolume;
+
+    video.addEventListener('volumechange', syncVolume);
+    mute.addEventListener('click', () => {
+      const silent = video.muted || video.volume === 0;
+      if (video.volume === 0) video.volume = lastVolume;
+      video.muted = !silent;
+      syncVolume();
+    });
+    volume.addEventListener('input', () => {
+      video.volume = volume.value / 100;
+      video.muted = false;
+      syncVolume();
     });
 
-    seekSlider.addEventListener('input', () => {
-      const time = (seekSlider.value / 100) * video.duration;
-      video.currentTime = time;
+    const root = document.documentElement;
+    const requestFullscreen = root.requestFullscreen || root.webkitRequestFullscreen;
+    const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+    const fullscreenElement = () => document.fullscreenElement || document.webkitFullscreenElement;
+    fullscreen.hidden = !requestFullscreen || !exitFullscreen ||
+      (document.fullscreenEnabled ?? document.webkitFullscreenEnabled) === false;
+
+    function syncFullscreen() {
+      const active = Boolean(fullscreenElement());
+      fullscreen.classList.toggle('is-fullscreen', active);
+      labelButton(fullscreen, active ? 'Exit fullscreen' : 'Enter fullscreen');
+    }
+
+    document.addEventListener('fullscreenchange', syncFullscreen);
+    document.addEventListener('webkitfullscreenchange', syncFullscreen);
+    fullscreen.addEventListener('click', async () => {
+      try {
+        if (fullscreenElement()) await exitFullscreen.call(document);
+        else await requestFullscreen.call(root);
+      } catch {
+        if (!mediaFailed) status.textContent = 'Fullscreen is unavailable.';
+      }
     });
 
-    // Mute / Unmute
-    muteBtn.addEventListener('click', () => {
-      video.muted = !video.muted;
-      muteBtn.textContent = video.muted ? '🔇' : '🔊';
-      volumeSlider.value = video.muted ? 0 : video.volume;
-    });
+    function syncVR() {
+      enterVR.hidden = !window.AFRAME?.utils.device.checkVRSupport();
+    }
 
-    // Volume
-    volumeSlider.addEventListener('input', () => {
-      video.volume = volumeSlider.value;
-      video.muted = video.volume === 0;
-      muteBtn.textContent = video.muted ? '🔇' : '🔊';
-    });
+    scene.addEventListener('update-vr-devices', syncVR);
+    scene.addEventListener('loaded', syncVR);
 
-    // Fullscreen
-    fullscreenBtn.addEventListener('click', () => {
-      const elem = document.documentElement;
-      if (!document.fullscreenElement) {
-        if ( elem.requestFullscreen ) elem.requestFullscreen();
-        else if (elem.webkitEnterFullscreen) elem.webkitEnterFullscreen();
+    function showVideo() {
+      if (!mediaFailed) {
+        videosphere.setAttribute('visible', true);
+        status.textContent = '';
+      }
+    }
+
+    video.addEventListener('loadeddata', showVideo);
+    video.addEventListener('playing', showVideo);
+    video.addEventListener('error', () => showMediaError('This video couldn’t be loaded. Check the stream URL.'));
+
+    function loadVideo(url) {
+      if (!url) {
+        showMediaError('Add a stream URL with the ?url= parameter.');
+        return;
+      }
+      if (!window.AFRAME) {
+        showMediaError('The 360° viewer couldn’t load. Reload the page to try again.');
+        return;
+      }
+      status.textContent = 'Loading video…';
+      videosphere.setAttribute('src', '#video');
+      if (window.Hls?.isSupported()) {
+        const hls = new Hls();
+        hls.on(Hls.Events.LEVEL_LOADED, (_, { details }) => {
+          streamIsLive = details.live;
+          syncTimeline();
+        });
+        hls.on(Hls.Events.ERROR, (_, { fatal }) => {
+          if (fatal) showMediaError('This stream couldn’t be played. Check the stream URL and reload.');
+        });
+        hls.loadSource(url);
+        hls.attachMedia(video);
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = url;
       } else {
-        if ( document.exitFullscreen ) document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        showMediaError('This browser can’t play HLS video.');
+        return;
       }
-    });
+      playPause.disabled = mute.disabled = volume.disabled = false;
+    }
+
+    loadVideo(new URLSearchParams(window.location.search).get('url'));
   </script>
 </body>
 </html>
