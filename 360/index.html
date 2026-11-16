@@ -173,10 +173,38 @@
 
     .range:disabled { opacity: .45; cursor: default; }
     #volume { width: clamp(62px, 15vw, 100px); }
+
+    .resolution {
+      display: grid;
+      gap: 2px;
+      flex: none;
+      margin: 0 0 0 4px;
+      padding-inline-start: 10px;
+      border-inline-start: 1px solid var(--border);
+      color: var(--muted);
+      font-size: .75rem;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .resolution strong { color: #f6f3ef; font-weight: 650; }
     .look-hint { margin: 0 4px 0 0; color: var(--muted); white-space: nowrap; }
 
-    @media (max-width: 490px) {
+    @media (max-width: 660px) {
       .look-hint { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .actions { flex-wrap: wrap; }
+      .resolution {
+        display: flex;
+        gap: 6px;
+        order: 1;
+        flex-basis: 100%;
+        margin: 0;
+        padding: 4px 0 0;
+        border: 0;
+      }
     }
 
     @media (max-width: 350px) {
@@ -210,7 +238,7 @@
 <body>
   <video id="video" crossorigin="anonymous" playsinline preload="metadata" hidden></video>
   <a-scene background="color: #080809" xr-mode-ui="enterVRButton: #enterVR">
-    <a-entity camera look-controls position="0 1.6 0"></a-entity>
+    <a-entity camera look-controls="reverseMouseDrag: true" position="0 1.6 0"></a-entity>
     <a-videosphere id="videosphere" rotation="0 -90 0" radius="500" visible="false"></a-videosphere>
   </a-scene>
 
@@ -222,7 +250,7 @@
       <span class="timestamp" id="duration">—</span>
     </div>
     <div class="actions">
-      <button class="control" id="playPause" type="button" disabled>
+      <button class="control" id="playPause" type="button" aria-keyshortcuts="Space" title="Play (Space)" disabled>
         <span class="icon play-icon" aria-hidden="true"></span><span id="playLabel">Play</span>
       </button>
       <div class="audio" role="group" aria-label="Audio">
@@ -231,6 +259,7 @@
         </button>
         <input class="range" id="volume" type="range" min="0" max="100" value="100" aria-label="Volume" disabled>
       </div>
+      <p class="resolution" id="resolution" hidden><span>Resolution</span> <strong id="resolutionValue"></strong></p>
       <div class="view">
         <p class="look-hint">Drag to look around</p>
         <button class="control" id="enterVR" type="button" aria-label="Enter VR" title="Enter VR" hidden>VR</button>
@@ -253,6 +282,8 @@
     const duration = document.getElementById('duration');
     const mute = document.getElementById('mute');
     const volume = document.getElementById('volume');
+    const resolution = document.getElementById('resolution');
+    const resolutionValue = document.getElementById('resolutionValue');
     const enterVR = document.getElementById('enterVR');
     const fullscreen = document.getElementById('fullscreen');
     let streamIsLive = false;
@@ -267,8 +298,19 @@
     function showMediaError(message) {
       mediaFailed = true;
       playPause.disabled = seek.disabled = mute.disabled = volume.disabled = true;
+      resolution.hidden = true;
       status.textContent = message;
     }
+
+    function syncResolution() {
+      const { videoWidth, videoHeight } = video;
+      resolution.hidden = mediaFailed || !videoWidth || !videoHeight;
+      resolutionValue.textContent = resolution.hidden ? '' : `${videoWidth} × ${videoHeight}`;
+    }
+
+    video.addEventListener('loadedmetadata', syncResolution);
+    video.addEventListener('resize', syncResolution);
+    video.addEventListener('emptied', () => { resolution.hidden = true; });
 
     function formatTime(seconds) {
       const total = Math.floor(Math.max(0, seconds));
@@ -314,13 +356,14 @@
       const playing = !video.paused && !video.ended;
       playPause.classList.toggle('is-playing', playing);
       playLabel.textContent = playing ? 'Pause' : (video.ended ? 'Replay' : 'Play');
+      playPause.title = `${playLabel.textContent} (Space)`;
     }
 
     for (const event of ['play', 'pause', 'ended']) {
       video.addEventListener(event, syncPlayback);
     }
 
-    playPause.addEventListener('click', async () => {
+    async function togglePlayback() {
       if (!video.paused && !video.ended) {
         video.pause();
         return;
@@ -333,6 +376,16 @@
           status.textContent = 'Playback couldn’t start. Select Play to try again.';
         }
       }
+    }
+
+    playPause.addEventListener('click', togglePlayback);
+    document.addEventListener('keydown', event => {
+      if (event.key !== ' ' || event.defaultPrevented || playPause.disabled ||
+          event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      if (event.target instanceof Element &&
+          event.target.closest('button, select, textarea, input:not([type="range"]), [contenteditable]')) return;
+      event.preventDefault();
+      if (!event.repeat) togglePlayback();
     });
 
     function syncVolume() {
