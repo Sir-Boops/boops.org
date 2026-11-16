@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <title>360° Video Player</title>
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -295,6 +296,24 @@
 
     a-scene .a-modal .a-dialog-allow-button { background: var(--accent); color: #211815; }
     a-scene .a-modal .a-dialog-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    #fullscreenHelp {
+      width: min(calc(100% - 32px), 380px);
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #191719;
+      color: inherit;
+      font: inherit;
+    }
+
+    #fullscreenHelp::backdrop { background: rgba(0, 0, 0, .76); }
+    #fullscreenHelp h2 { margin: 0; font-size: 1.125rem; }
+    #fullscreenHelp p { margin: 8px 0 16px; line-height: 1.5; }
+    #fullscreenHelp a { display: inline-block; margin-bottom: 12px; color: var(--accent); }
+    #fullscreenHelp form { display: flex; justify-content: flex-end; }
+    #fullscreenHelp .control { padding-inline: 16px; background: var(--accent); color: #211815; }
+    #fullscreenHelp :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   </style>
 </head>
 <body>
@@ -333,6 +352,13 @@
     </div>
   </div>
 
+  <dialog id="fullscreenHelp" aria-labelledby="fullscreenHelpTitle" aria-describedby="fullscreenHelpText">
+    <h2 id="fullscreenHelpTitle">Fullscreen</h2>
+    <p id="fullscreenHelpText"></p>
+    <a id="openViewer" target="_blank" rel="noopener" hidden>Open viewer in a new tab</a>
+    <form method="dialog"><button class="control" type="submit" autofocus>Done</button></form>
+  </dialog>
+
   <script>
     const video = document.getElementById('video');
     const scene = document.querySelector('a-scene');
@@ -350,6 +376,9 @@
     const resolutionValue = document.getElementById('resolutionValue');
     const enterVR = document.getElementById('enterVR');
     const fullscreen = document.getElementById('fullscreen');
+    const fullscreenHelp = document.getElementById('fullscreenHelp');
+    const fullscreenHelpText = document.getElementById('fullscreenHelpText');
+    const openViewer = document.getElementById('openViewer');
     let streamIsLive = false;
     let mediaFailed = false;
     let lastVolume = video.volume || 1;
@@ -507,26 +536,50 @@
     });
 
     const root = document.documentElement;
-    const requestFullscreen = root.requestFullscreen || root.webkitRequestFullscreen;
-    const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+    const standardFullscreen = root.requestFullscreen && document.exitFullscreen && document.fullscreenEnabled !== false;
+    const webkitFullscreen = root.webkitRequestFullscreen && document.webkitExitFullscreen && document.webkitFullscreenEnabled !== false;
+    const requestFullscreen = standardFullscreen ? root.requestFullscreen : (webkitFullscreen ? root.webkitRequestFullscreen : null);
+    const exitFullscreen = standardFullscreen ? document.exitFullscreen : (webkitFullscreen ? document.webkitExitFullscreen : null);
     const fullscreenElement = () => document.fullscreenElement || document.webkitFullscreenElement;
-    fullscreen.hidden = !requestFullscreen || !exitFullscreen ||
-      (document.fullscreenEnabled ?? document.webkitFullscreenEnabled) === false;
+    const embeddedViewer = window.self !== window.top;
+    const appleMobile = typeof navigator.standalone === 'boolean' || /iPhone|iPad|iPod/.test(navigator.userAgent);
+    const standalone = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches ||
+      matchMedia('(display-mode: fullscreen)').matches;
+    fullscreen.hidden = !requestFullscreen && standalone;
+
+    function showFullscreenHelp() {
+      const message = embeddedViewer ? 'Open the viewer in a new tab to use fullscreen.' : appleMobile ?
+        'To watch without browser toolbars, open this page in Safari. In the Share menu, choose Add to Home Screen. Turn on Open as Web App if offered, then launch the viewer from your Home Screen.' :
+        'Fullscreen is unavailable in this browser window.';
+      if (typeof fullscreenHelp.showModal !== 'function') {
+        if (!mediaFailed) status.textContent = message;
+        return;
+      }
+      fullscreenHelpText.textContent = message;
+      openViewer.hidden = !embeddedViewer;
+      if (embeddedViewer) openViewer.href = window.location.href;
+      if (!fullscreenHelp.open) fullscreenHelp.showModal();
+    }
 
     function syncFullscreen() {
       const active = Boolean(fullscreenElement());
       fullscreen.classList.toggle('is-fullscreen', active);
-      labelButton(fullscreen, active ? 'Exit fullscreen' : 'Enter fullscreen');
+      labelButton(fullscreen, active ? 'Exit fullscreen' : (requestFullscreen ? 'Enter fullscreen' : 'Fullscreen options'));
     }
 
+    syncFullscreen();
     document.addEventListener('fullscreenchange', syncFullscreen);
     document.addEventListener('webkitfullscreenchange', syncFullscreen);
+    fullscreenHelp.addEventListener('close', showControls);
     fullscreen.addEventListener('click', async () => {
+      const active = Boolean(fullscreenElement());
       try {
-        if (fullscreenElement()) await exitFullscreen.call(document);
-        else await requestFullscreen.call(root);
+        if (active) await exitFullscreen?.call(document);
+        else if (requestFullscreen) await requestFullscreen.call(root);
+        else showFullscreenHelp();
       } catch {
-        if (!mediaFailed) status.textContent = 'Fullscreen is unavailable.';
+        if (!active) showFullscreenHelp();
+        else if (!mediaFailed) status.textContent = 'Couldn’t exit fullscreen.';
       }
     });
 
