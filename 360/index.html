@@ -233,11 +233,64 @@
       border-radius: 12px;
       background: var(--panel);
     }
+
+    /* A-Frame supplies the permission dialog and handles the browser request. */
+    a-scene .a-modal {
+      display: grid;
+      place-items: center;
+      place-items: safe center;
+      overflow: auto;
+      padding: 16px;
+      background: rgba(0, 0, 0, .76);
+    }
+
+    a-scene .a-modal .a-dialog {
+      inset: auto;
+      transform: none;
+      width: min(100%, 380px);
+      height: auto;
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #191719;
+      color: #f6f3ef;
+      font: 1rem/1.5 Inter, system-ui, sans-serif;
+    }
+
+    a-scene .a-modal .a-dialog-text-container { height: auto; }
+    a-scene .a-modal .a-dialog-text { margin: 0; font: inherit; }
+
+    a-scene .a-modal .a-dialog-buttons-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      height: auto;
+      margin-top: 16px;
+    }
+
+    a-scene .a-modal .a-dialog-button {
+      flex: 1 0 auto;
+      width: auto;
+      height: auto;
+      min-height: 44px;
+      margin: 0;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: #302d30;
+      color: #f6f3ef;
+      opacity: 1;
+      font: 650 1rem/1.25 Inter, system-ui, sans-serif;
+    }
+
+    a-scene .a-modal .a-dialog-allow-button { background: var(--accent); color: #211815; }
+    a-scene .a-modal .a-dialog-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   </style>
 </head>
 <body>
   <video id="video" crossorigin="anonymous" playsinline preload="metadata" hidden></video>
-  <a-scene background="color: #080809" xr-mode-ui="enterVRButton: #enterVR">
+  <a-scene background="color: #080809" xr-mode-ui="enterVRButton: #enterVR"
+    device-orientation-permission-ui="deviceMotionMessage: Allow motion access to look around by moving your phone. You can also drag to look around.; denyButtonText: Not now">
     <a-entity camera look-controls="reverseMouseDrag: true" position="0 1.6 0"></a-entity>
     <a-videosphere id="videosphere" rotation="0 -90 0" radius="500" visible="false"></a-videosphere>
   </a-scene>
