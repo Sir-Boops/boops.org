@@ -36,6 +36,16 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, .32);
       backdrop-filter: blur(14px);
       font-size: .875rem;
+      transition: opacity .18s ease;
+    }
+
+    #controls.controls-hidden:not(:has(:focus-visible, :active)) {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #controls { transition: none; }
     }
 
     .timeline {
@@ -327,6 +337,7 @@
     const video = document.getElementById('video');
     const scene = document.querySelector('a-scene');
     const videosphere = document.getElementById('videosphere');
+    const controls = document.getElementById('controls');
     const status = document.getElementById('status');
     const playPause = document.getElementById('playPause');
     const playLabel = document.getElementById('playLabel');
@@ -342,6 +353,33 @@
     let streamIsLive = false;
     let mediaFailed = false;
     let lastVolume = video.volume || 1;
+    let hideControlsTimer;
+
+    function showControls() {
+      clearTimeout(hideControlsTimer);
+      controls.classList.remove('controls-hidden');
+      if (!video.paused && !video.ended && !mediaFailed) {
+        hideControlsTimer = setTimeout(() => controls.classList.add('controls-hidden'), 3000);
+      }
+    }
+
+    for (const event of ['playing', 'pause', 'ended']) video.addEventListener(event, showControls);
+    for (const event of ['pointerdown', 'input', 'focusin']) controls.addEventListener(event, showControls);
+
+    let canvasTap;
+    scene.addEventListener('pointerdown', event => {
+      canvasTap = event.target === scene.canvas && event.isPrimary && event.button === 0 ? event : null;
+    });
+    scene.addEventListener('pointermove', event => {
+      if (canvasTap?.pointerId === event.pointerId &&
+          Math.hypot(event.clientX - canvasTap.clientX, event.clientY - canvasTap.clientY) > 10) canvasTap = null;
+    });
+    scene.addEventListener('pointercancel', () => { canvasTap = null; });
+    scene.addEventListener('pointerup', event => {
+      if (canvasTap?.pointerId !== event.pointerId) return;
+      canvasTap = null;
+      if (event.target === scene.canvas) showControls();
+    });
 
     function labelButton(button, label) {
       button.setAttribute('aria-label', label);
@@ -350,6 +388,7 @@
 
     function showMediaError(message) {
       mediaFailed = true;
+      showControls();
       playPause.disabled = seek.disabled = mute.disabled = volume.disabled = true;
       resolution.hidden = true;
       status.textContent = message;
